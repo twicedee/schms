@@ -9,15 +9,7 @@ import {FaMoon} from 'react-icons/fa'
 export default function Header() {
   return (
     <Navbar className='border-b-2'> 
-      <span className='text-left text-lg bg-gradient-to-r'>ELIMU SCHOOL</span>
-      <form>
-        <TextInput
-          type='text'
-          placeholder='Search Student'
-          rightIcon={AiOutlineSearch}
-          className='hidden lg:inline'
-        />
-      </form>
+      <span className='text-center text-lg bg-gradient-to-r'>ELIMU SCHOOL</span>
       <Button className='w-12 h-10 lg:hidden' color='gray' pill>
         <AiOutlineSearch/>
       </Button >
@@ -36,16 +28,7 @@ export default function Header() {
 
 
       
-      <Navbar.Collapse>
-        <Navbar.Link href="#">
-          Profile
-        </Navbar.Link>
-        <Navbar.Link as={Link} href="/academics">Academics</Navbar.Link>
-        <Navbar.Link href="/student-registration">Student Registration</Navbar.Link>
-        <Navbar.Link href="/teaching-staff">Teaching Staff</Navbar.Link>
-        <Navbar.Link href="/dashboard">Dashboard</Navbar.Link>
-        <Navbar.Link href="/">Log out</Navbar.Link>
-      </Navbar.Collapse>
+      
     </Navbar>
   )
 }
