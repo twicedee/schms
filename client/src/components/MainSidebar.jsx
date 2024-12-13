@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 
 export default function MainSidebar() {
   return (
-    <Sidebar className='w-full md:w-56 h-full' >
+    <Sidebar className='w-full md:w-50 h-full' >
       <Sidebar.Items>
         <SidebarItemGroup className='flex flex-col gap-2 divide-y divide-gray-200 dark:divide-gray-700'>
           <Link to="/">

@@ -13,7 +13,6 @@ import CoCurricular from "./pages/CoCurricular.jsx";
 import Academics from "./pages/Academics.jsx";
 import Students from "./pages/Students.jsx";
 import MainSidebar from "./components/MainSidebar.jsx";
-import { Sidebar } from "flowbite-react";
 import Profile from "./pages/Profile.jsx";
 import Department from "./pages/Department.jsx";
 import Classes from "./pages/Classes.jsx";
@@ -24,7 +23,6 @@ export default function App() {
       <Header />
       <div className="flex flex-row m-5 p-5">
         <MainSidebar/>
-      
         <Routes className="flex-1">
           <Route path="/" element={<Home />} />
           <Route path="/sign-in" element={<SignIn />} />
