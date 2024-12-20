@@ -25,6 +25,7 @@ export default function MainSidebar() {
           <Link to="/academics"><SidebarItem>Academics</SidebarItem></Link>
           <Link to="/co-curricular"><SidebarItem>Co-Curricular</SidebarItem></Link>
           <Link to="/departments"><SidebarItem>Departments</SidebarItem></Link>
+          <Link to="/administration">Administration</Link>
           <Link to="/profile"><SidebarItem icon={FaUserCircle}>My Profile</SidebarItem></Link>
 
 

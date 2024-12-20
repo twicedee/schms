@@ -21,12 +21,14 @@ export default function App() {
   return (
     <BrowserRouter>
       <Header />
-      <div className="flex flex-row m-5 p-5">
+      <Routes>
+        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/sign-up" element={<SignUp />} />
+      </Routes>
+      <div className="flex flex-row m-3 p-2">
         <MainSidebar/>
         <Routes className="flex-1">
           <Route path="/" element={<Home />} />
-          <Route path="/sign-in" element={<SignIn />} />
-          <Route path="/sign-up" element={<SignUp />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/student-registration" element={<StudentRegistration />} />
           <Route path="/teaching-staff" element={<TeachingStaff />} />
