@@ -12,10 +12,10 @@ export default function Students() {
       <div>
         <Tabs variant="fullWidth">
           <TabItem title="All Students">
-            <div className="m-5 w-full flex-col">
+            <div className=" flex-col">
               <List
                 ordered
-                className="w-full max-w-md divide-y divide-gray-200 dark:divide-gray-700"
+                className=" m-5 p-5 max-w-auto divide-y divide-gray-200 dark:divide-gray-700"
               >
                 <List.Item className="pb-3 sm:pb-4">
                   <div className="flex items-center space-x-4 rtl:space-x-reverse">
@@ -28,8 +28,8 @@ export default function Students() {
                         email@flowbite.com
                       </p>
                     </div>
-                    <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                      $320
+                    <div className="inline-flex items-center text-base font-semibold text-blue-600 dark:text-white">
+                      View
                     </div>
                   </div>
                 </List.Item>

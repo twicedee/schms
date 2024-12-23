@@ -16,32 +16,55 @@ import MainSidebar from "./components/MainSidebar.jsx";
 import Profile from "./pages/Profile.jsx";
 import Department from "./pages/Department.jsx";
 import Classes from "./pages/Classes.jsx";
+import PrivateRoute from "./components/PrivateRoute.jsx";
+import Administration from "./pages/Administration.jsx";
+import AddStaff from "./pages/AddStaff.jsx";
+import StudentPage from "./pages/StudentPage.jsx";
+
+
 
 export default function App() {
   return (
     <BrowserRouter>
       <Header />
       <Routes>
+        {/* Public routes */}
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
+
+        {/* Private route with Sidebar layout */}
+        <Route element={<PrivateRoute />}>
+          <Route 
+            path="*" 
+            element={
+              <div className="flex flex-row max-w-auto m-3 p-2">
+                <MainSidebar />
+                <div className="flex-1">
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/student-registration" element={<StudentRegistration />} />
+                    <Route path="/teaching-staff" element={<TeachingStaff />} />
+                    <Route path="/non-teaching-staff" element={<NonTeachingStaff />} />
+                    <Route path="/co-curricular" element={<CoCurricular />} />
+                    <Route path="/academics" element={<Academics />} />
+                    <Route path="/students" element={<Students />} />
+                    <Route path="/department" element={<Department />} />
+                    <Route path="/classes" element={<Classes />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/administration" element={<Administration />} />
+                    <Route path="/add-staff" element={<AddStaff />} />
+                    <Route path='/student/:studentId' element={<StudentPage />} />
+
+
+
+                  </Routes>
+                </div>
+              </div>
+            } 
+          />
+        </Route>
       </Routes>
-      <div className="flex flex-row m-3 p-2">
-        <MainSidebar/>
-        <Routes className="flex-1">
-          <Route path="/" element={<Home />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/student-registration" element={<StudentRegistration />} />
-          <Route path="/teaching-staff" element={<TeachingStaff />} />
-          <Route path="/non-teaching-staff" element={<NonTeachingStaff />} />
-          <Route path="/co-curricular" element={<CoCurricular />} />
-          <Route path="/academics" element={<Academics />} />
-          <Route path="/students" element={<Students />} />
-          <Route path="/department" element={<Department/>}/>
-          <Route path="/classes" element={<Classes/>}/>
-          <Route path="/profile" element={<Profile/>}/>
-        </Routes>
-      </div>
-      
     </BrowserRouter>
   );
 }

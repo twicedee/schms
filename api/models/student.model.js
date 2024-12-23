@@ -26,14 +26,16 @@ const studentSchema = new mongoose.Schema(
         
 
         studentPhoto: {
-            type: Image,
+            type: String,
             default:
                 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
         },
 
         level: {
             type: String,
-            default: 'uncategorized',
+            enum: ["Lower School", "Middle School", "Junior High School", "Senior High School"],
+            default: '',
+
         },
 
         grade: {
@@ -48,14 +50,9 @@ const studentSchema = new mongoose.Schema(
 
         parent: {
             type: String,
-            required: true,
-            unique: true,
         },
 
-        contact: {
-            type: Number,
-            required: true
-        },
+
 
     },
     { timestamps: true }

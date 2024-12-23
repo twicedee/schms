@@ -14,9 +14,11 @@ export default function SignIn() {
   const { loading, error: errorMessage } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
