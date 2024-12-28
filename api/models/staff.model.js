@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const staffSchema = new mongoose.Schema(
     {
-        id: {
+        staffId: {
             type: Number,
             required: true
         },
@@ -19,7 +19,6 @@ const staffSchema = new mongoose.Schema(
         },
         middleName: {
             type: String,
-            required: false,
 
         },
 
@@ -66,6 +65,16 @@ const staffSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        isHOD: {
+            type: Boolean,
+            default: false
+        },
+        isClassTeacher: {
+            type: Boolean,
+            default: false
+        }
+
+
     },
     { timestamps: true }
 );

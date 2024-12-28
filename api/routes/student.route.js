@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 router.post("/admit-student", verifyToken, admitStudent)
-router.get("get-students", verifyToken, getStudents)
+router.get("/get-students", getStudents)
 
 
 export default router;

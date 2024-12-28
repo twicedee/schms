@@ -1,11 +1,13 @@
 import React from "react";
 import { useState } from "react";
 import { TextInput, Alert, Button, Spinner } from "flowbite-react";
+import { useNavigate } from "react-router-dom";
 
 
 export default function StudentRegistration() {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(null);
+  const navigate = useNavigate()
 
 
   const handleChange = (e) => {
@@ -42,11 +44,11 @@ export default function StudentRegistration() {
       }
 
       if (res.ok) {
-        dispatch(studentAdmitted(data));
-        navigate(`/student/${data._id}`);
+        setError(null)
+        navigate(`/student/${data.admNumber}`);
       }
     } catch (error) {
-      setError('error.message');
+      setError(error);
     }
   };
 

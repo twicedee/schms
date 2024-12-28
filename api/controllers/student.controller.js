@@ -51,14 +51,12 @@ export const getStudents = async (req, res, next) => {
         const limit = parseInt(req.query.limit) || 25;
         const sortDirection = req.query.order === 'asc' ? 1 : -1;
         const students = await Student.find({
-            ...(req.query.admNumber && { admNumber: req.query.admNumber }),
             ...(req.query.firstName && { firstName: req.query.firstName }),
             ...(req.query.LastName && { lastName: req.query.lastName }),
             ...(req.query.middleName && { middleName: req.query.middleName }),
-            ...(req.query.studentPhoto && { studentPhoto: req.query.studentPhoto }),
+            ...(req.query.gender && { gender: req.query.gender }),
             ...(req.query.level && { level: req.query.level }),
             ...(req.query.grade && { grade: req.query.grade }),
-            //...(req.query.studentId && { _id: req.query.studentId }),
             ...(req.query.searchTerm && {
                 $or: [
                     { admNumber: { $regex: req.query.searchTerm, $options: 'i' } },
@@ -73,8 +71,6 @@ export const getStudents = async (req, res, next) => {
 
         const now = new Date();
 
-        
-
         res.status(200).json({
             students,
             totalstudents,
@@ -88,11 +84,42 @@ export const getStudents = async (req, res, next) => {
 
 
 export const updateStudent = async (req, res, next) => {
+    if (!req.user.isAdmin || req.user.id !== req.params.userId) {
+        return next(errorHandler(403, 'You are not allowed to update this post'));
+    }
+    try {
+        const updatedStudent = await Student.findByIdAndUpdate(
+            req.params.admNumber,
+            {
+                $set: {
+                    firstName: req.query.firstName,
+                    lastName: req.query.lastName,
+                    middleName: req.query.middleName,
+                    gender: req.query.gender,
+                    level: req.query.level,
+                    grade: req.query.grade
+                },
+            },
+            { new: true }
+        );
+        res.status(200).json(updatedStudent);
+    } catch (error) {
+        next(error);
+    }
 
 }
 
 
 export const deleteStudent = async (req, res, next) => {
+    if (!req.user.isAdmin || req.user.id !== req.params.userId) {
+        return next(errorHandler(403, 'You are not allowed to delete this post'));
+    }
+    try {
+        await Student.findByIdAndDelete(req.params.admNumber);
+        res.status(200).json('The post has been deleted');
+    } catch (error) {
+        next(error);
+    }
 
 }
 

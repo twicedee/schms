@@ -1,10 +1,15 @@
 import React from 'react'
+import { Button, Spinner } from 'flowbite-react';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+
 
 export default function StudentPage() {
   const { studentId } = useParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [student, setStudents] = useState(null);
+  const [student, setStudent] = useState(null);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchStudent = async () => {
@@ -12,23 +17,31 @@ export default function StudentPage() {
         setLoading(true);
         const res = await fetch(`/api/student/get-students?studentId=${studentId}`);
         const data = await res.json();
+        console.log(data)
         if (!res.ok) {
           setError(true);
-          //setLoading(false);
+          setLoading(false);
           return;
         }
         if (res.ok) {
-          setPost(data.student[0]);
-          //setLoading(false);
+          setStudent(data.students[0]);
+          setLoading(false);
           setError(false);
         }
       } catch (error) {
         setError(true);
-        //setLoading(false);
+        setLoading(false);
       }
     };
     fetchStudent();
   }, [studentId]);
+
+  if (loading)
+    return (
+      <div className='flex justify-center items-center min-h-screen'>
+        <Spinner size='xl' />
+      </div>
+    );
 
   return (
     <div>
@@ -40,16 +53,16 @@ export default function StudentPage() {
             </h3>
             <div className="mt-2 text-gray-600">
               <p>
-                <span className="font-semibold">Name:</span>{student.firstName}{" "} {student.middleName} {" "}
-                {student.lastName}
+                <span className="font-semibold">Name: </span>{student && student.firstName}{" "} {student && student.middleName} {" "}
+                {student && student.lastName}
                 
               </p>
               <p>
-                <span className="font-semibold">Date of Birth:</span>{student.DOB}{" "}
+                <span className="font-semibold">Date of Birth: </span>{student && student.DOB}{" "}
                 
               </p>
               <p>
-                <span className="font-semibold">Gender:</span> {student.gender}
+                <span className="font-semibold">Gender: </span> {student && student.gender}
               </p>
             </div>
           </div>
@@ -83,11 +96,11 @@ export default function StudentPage() {
                 
               </p>
               <p>
-                <span className="font-semibold">Grade:</span>{student.grade}{" "}
+                <span className="font-semibold">Grade:</span>{student && student.grade}{" "}
                 
               </p>
               <p>
-                <span className="font-semibold">Level:</span>{student.level}{" "}
+                <span className="font-semibold">Level:</span>{student && student.level}{" "}
               </p>
             </div>
           </div>
@@ -95,12 +108,12 @@ export default function StudentPage() {
 
         {/* Actions */}
         <div className="bg-gray-100 p-4 flex justify-end gap-4">
-          <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg focus:outline-none">
+          <Button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg focus:outline-none">
             Delete
-          </button>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg focus:outline-none">
+          </Button>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg focus:outline-none">
             Edit
-          </button>
+          </Button>
         </div>
     </div>
   )

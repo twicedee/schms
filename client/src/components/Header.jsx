@@ -1,34 +1,34 @@
-import { Button, Navbar, TextInput } from 'flowbite-react'
-import React from 'react'
-import { Link } from 'react-router-dom'
-import {AiOutlineSearch} from 'react-icons/ai'
-import {FaMoon} from 'react-icons/fa'
-
-
+import { Button, Navbar, TextInput, Avatar } from "flowbite-react";
+import React from "react";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export default function Header() {
+  const {currentUser} = useSelector((state) => state.user);
+  const now = new Date();
   return (
-    <Navbar className='border-b-2'> 
-      <span className='text-center text-lg bg-gradient-to-r'>ELIMU SCHOOL</span>
-      <Button className='w-12 h-10 lg:hidden' color='gray' pill>
-        <AiOutlineSearch/>
-      </Button >
+    <Navbar className="border-b-2">
+      <span className="text-center text-lg bg-gradient-to-r">ELIMU SCHOOL</span>
 
-      <div className='flex gap-1 md:order-2' >
-        <Button className='w-12 h-10 hidden sm:inline' color='gray' pill>
-          <FaMoon/>
-        </Button>
-        <Link to="/sign-in">
-          <Button gradientDuoTone="greyToBlack">
-            Sign In
-          </Button>
-        </Link>
-        <Navbar.Toggle/>
+      <div className="flex flex-row justify-end gap-1">
+        <span className="justify-center align-bottom flex flex-col">{now.toLocaleString()}</span>
       </div>
-
-
-      
-      
+      <div>
+        {currentUser ? (
+          <Avatar alt="user" img={currentUser.profilePicture} rounded>
+            <div className="font-medium dark:text-white">
+              <div>Jese Leos</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                {currentUser.username}
+              </div>
+            </div>
+          </Avatar>
+        ) : (
+          <Link to="/sign-in">
+            <Button gradientDuoTone="greyToBlack">Sign In</Button>
+          </Link>
+        )}
+      </div>
     </Navbar>
-  )
+  );
 }
