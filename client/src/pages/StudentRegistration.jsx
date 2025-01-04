@@ -1,14 +1,12 @@
 import React from "react";
 import { useState } from "react";
-import { TextInput, Alert, Button, Spinner } from "flowbite-react";
+import { TextInput, Alert, Button, Spinner} from "flowbite-react";
 import { useNavigate } from "react-router-dom";
-
 
 export default function StudentRegistration() {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(null);
-  const navigate = useNavigate()
-
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -32,7 +30,7 @@ export default function StudentRegistration() {
     }
 
     try {
-        const res = await fetch("/api/student/admit-student", {
+      const res = await fetch("/api/student/admit-student", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -44,7 +42,7 @@ export default function StudentRegistration() {
       }
 
       if (res.ok) {
-        setError(null)
+        setError(null);
         navigate(`/student/${data.admNumber}`);
       }
     } catch (error) {
@@ -64,25 +62,22 @@ export default function StudentRegistration() {
 
         {/* Student Personal Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <TextInput
+          <TextInput
             type="number"
             id="admNumber"
             placeholder="Admission Number"
-            //value={formData.admNumber}
             onChange={handleChange}
           />
           <TextInput
             type="text"
             id="firstName"
             placeholder="first Name"
-            //value={formData.firstName}
             onChange={handleChange}
           />
           <TextInput
             type="text"
             id="lastName"
             placeholder="Last Name"
-            //value={formData.lastName}
             onChange={handleChange}
           />
         </div>
@@ -92,28 +87,19 @@ export default function StudentRegistration() {
             type="text"
             id="middleName"
             placeholder="Middle Name"
-            //value={formData.middleName}
             onChange={handleChange}
           />
-          <TextInput
-            type="date"
-            id="DOB"
-            //value={formData.DOB}
-            onChange={handleChange}
-          />
+          <TextInput type="date" id="DOB" onChange={handleChange} />
 
           <select
             id="gender"
-
-            //value={formData.gender}
             onChange={handleChange}
             className="input"
             required
           >
             <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
           </select>
           <select
             id="level"
@@ -150,8 +136,7 @@ export default function StudentRegistration() {
         </div>
 
         <Button gradientDuoTone="purpleToPink" type="submit">
-          
-            Admit Student
+          Admit Student
         </Button>
         {error && (
           <Alert className="mt-5" color="failure">

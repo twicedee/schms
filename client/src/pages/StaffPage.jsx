@@ -1,21 +1,23 @@
-import React from 'react'
+import React from "react";
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-export default function Department() {
+export default function TeacherPage() {
   const { studentId } = useParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [student, setStudent] = useState(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStudent = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/student/get-students?studentId=${studentId}`);
+        const res = await fetch(
+          `/api/student/get-students?studentId=${studentId}`
+        );
         const data = await res.json();
-        console.log(data)
+        console.log(data);
         if (!res.ok) {
           setError(true);
           setLoading(false);
@@ -33,7 +35,13 @@ export default function Department() {
     };
     fetchStudent();
   }, [studentId]);
-  return (
-    <div>Department</div>
-  )
+
+  if (loading) {
+    return 
+    <div className='flex justify-center items-center min-h-screen'>
+    <Spinner size='xl' />
+  </div>
+  }
+
+  return <div>TeacherPage</div>;
 }

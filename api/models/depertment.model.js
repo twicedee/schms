@@ -1,32 +1,16 @@
 import mongoose from 'mongoose';
 
-const staffSchema = new mongoose.Schema(
-    {
-        department: {
-            type: String,
-            default: " ",// math, sience, e.t.c
-            required: true
-        },
-        hod:{ //head of department 
-            type: String,
-            required: true
-        },
 
-        subjects:{
-            type: String,
-            required: true
 
-        },
 
-        members:{
-            type: String,
+const departmentSchema = new mongoose.Schema({
+    name: { type: String, required: true, unique: true },
+    description: { type: String },
+    headOfDepartment: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff' },
+    subjects:[{ type: String }],
+    staffMembers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Staff' }]
+});
 
-        },
+const Department = mongoose.model('Department', departmentSchema);
 
-    },
-    { timestamps: true }
-);
-
-const User = mongoose.model('Staff', staffSchema);
-
-export default User;
+export default Department;

@@ -3,13 +3,17 @@ import mongoose from 'mongoose';
 const staffSchema = new mongoose.Schema(
     {
         staffId: {
-            type: Number,
+            type: String,
             required: true
         },
         role: {
             type: String,
-            enum: ['teaching', 'non-teaching'],
-            required: true,
+            
+        },
+        initials:{
+            type: String,
+            enum: ["Mr.", "Mrs.", "Miss.", "Dr." ]
+
         },
 
         firstName: {
@@ -17,8 +21,9 @@ const staffSchema = new mongoose.Schema(
             required: true,
 
         },
+
         middleName: {
-            type: String,
+            type: String
 
         },
 
@@ -52,13 +57,11 @@ const staffSchema = new mongoose.Schema(
         },
 
         department: {
-            type: String,
-            default: 'uncategorized',
+            type: { type: mongoose.Schema.Types.ObjectId, ref: 'Department' },
         },
 
         subjects: {
-            type: String,
-            default: 'uncategorized',
+            type:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Department' }],
         },
 
         isAdmin: {

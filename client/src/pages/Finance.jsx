@@ -10,7 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-export default function Students() {
+export default function Finance() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [students, setStudents] = useState([]); // State to store the list of students
@@ -27,8 +27,10 @@ export default function Students() {
           return;
         }
         setStudents(data.students);
+        console.log(data.students[0])
         setLoading(false);
         setError(false);
+
       } catch (err) {
         setError(true);
         setLoading(false);
@@ -65,6 +67,8 @@ export default function Students() {
               <Table.HeadCell>Name</Table.HeadCell>
               <Table.HeadCell>Gender</Table.HeadCell>
               <Table.HeadCell>Grade</Table.HeadCell>
+              <Table.HeadCell>Balance</Table.HeadCell>
+
               <Table.HeadCell>
                 <span className="sr-only">View</span>
               </Table.HeadCell>
@@ -96,10 +100,15 @@ export default function Students() {
                       {student.grade}
                     </p>
                   </Table.Cell>
+                  <Table.Cell>
+                    <p className="text-md text-gray-500 dark:text-gray-400">
+                    {student.feeBalance}
+                    </p>
+                  </Table.Cell>
 
                   <Table.Cell>
                     <Link
-                      to={`/student/${student.admNumber}`}
+                      to={`/student-finance/${student.admNumber}`}
                       className="text-blue-600 dark:text-blue-400 hover:underline"
                     >
                       View
@@ -115,18 +124,4 @@ export default function Students() {
   );
 }
 
-{
-  /* <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-              {'Apple MacBook Pro 17"'}
-            </Table.Cell>
-            <Table.Cell>Sliver</Table.Cell>
-            <Table.Cell>Laptop</Table.Cell>
-            <Table.Cell>$2999</Table.Cell>
-            <Table.Cell>
-              <a href="#" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
-                Edit
-              </a>
-            </Table.Cell>
-          </Table.Row> */
-}
+

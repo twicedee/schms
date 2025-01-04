@@ -48,15 +48,18 @@ export const admitStudent = async (req, res, next) => {
 export const getStudents = async (req, res, next) => {
     try {
         const startIndex = parseInt(req.query.startIndex) || 0;
-        const limit = parseInt(req.query.limit) || 25;
+        const limit = parseInt(req.query.limit) ;
         const sortDirection = req.query.order === 'asc' ? 1 : -1;
         const students = await Student.find({
+            ...(req.query.admNumber && { admNumber: req.query.admNumber }),
             ...(req.query.firstName && { firstName: req.query.firstName }),
             ...(req.query.LastName && { lastName: req.query.lastName }),
             ...(req.query.middleName && { middleName: req.query.middleName }),
             ...(req.query.gender && { gender: req.query.gender }),
             ...(req.query.level && { level: req.query.level }),
             ...(req.query.grade && { grade: req.query.grade }),
+            ...(req.query.feeBalance && { feeBalance: req.query.feeBalance }),
+
             ...(req.query.searchTerm && {
                 $or: [
                     { admNumber: { $regex: req.query.searchTerm, $options: 'i' } },
@@ -97,7 +100,8 @@ export const updateStudent = async (req, res, next) => {
                     middleName: req.query.middleName,
                     gender: req.query.gender,
                     level: req.query.level,
-                    grade: req.query.grade
+                    grade: req.query.grade,
+                    feeBalance: req.query.feeBalance
                 },
             },
             { new: true }

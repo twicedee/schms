@@ -23,6 +23,13 @@ const studentSchema = new mongoose.Schema(
             required: true,
 
         },
+
+        gender: {
+            type: String,
+            enum: ["Male", "Female"],
+            required: true
+        },
+
         
 
         studentPhoto: {
@@ -34,13 +41,13 @@ const studentSchema = new mongoose.Schema(
         level: {
             type: String,
             enum: ["Lower School", "Middle School", "Junior High School", "Senior High School"],
-            default: '',
+            required: true,
 
         },
 
         grade: {
             type: String,
-            default: 'uncategorized',
+            required: true,
         },
 
         DOB: {
@@ -51,6 +58,12 @@ const studentSchema = new mongoose.Schema(
         parent: {
             type: String,
         },
+
+        feeBalance: {
+            type: Number,
+            default: 30000
+
+        }
 
 
 

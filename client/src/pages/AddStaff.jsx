@@ -1,18 +1,16 @@
 import React from "react";
+import { useState } from "react";
+import { TextInput, ListGroup, ListGroupItem, Button } from "flowbite-react";
+import { useNavigate } from "react-router-dom";
 
 
-// firstName: "",
-//     lastName: "",
-//     dateOfBirth: "",
-//     gender: "",
-//     email: "",
-//     phone: "",
-//     department: "",
+
 
 
 export default function AddStaff() {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(null);
+  const navigate = useNavigate()
 
   // Handle form input changes
   const handleChange = (e) => {
@@ -26,8 +24,6 @@ export default function AddStaff() {
     if (
       !formData.firstName ||
       !formData.lastName ||
-      !formData.dateOfBirth ||
-      !formData.gender ||
       !formData.email ||
       !formData.phone ||
       !formData.department
@@ -38,30 +34,27 @@ export default function AddStaff() {
 
 
     try {
-      const response = await fetch("/api/students/admit", {
+      const res = await fetch("/api/staff/add-staff", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
-        const { message } = await response.json();
+      if (!res.ok) {
+        const { message } = await res.json();
         throw new Error(message);
       }
 
-      const data = await response.json();
-      alert("Student admitted successfully!");
-      console.log("Saved Student:", data);
+      const data = await res.json();
+      navigate(`staff/${data._id}`)
 
       // Reset form after successful submission
       setFormData({
         firstName: "",
         lastName: "",
-        dateOfBirth: "",
-        gender: "",
-        email: "",
         phone: "",
         department: "",
+        subjects:""
       });
     } catch (error) {
       setError(error.message);
@@ -69,146 +62,70 @@ export default function AddStaff() {
   };
 
   return (
-    <div>
+    <div className="m-30 justify-items-center">
       <form
         onSubmit={handleSubmit}
-        className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-md space-y-4"
+        className="max-w-3xl m-auto p-6 bg-white shadow-md rounded-md space-y-4"
       >
         <h1 className="text-2xl font-bold text-center mb-4">
-          Admit New Student
+          Add Staff
         </h1>
 
         {error && <p className="text-red-600 text-center">{error}</p>}
 
         {/* Student Personal Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
+          <TextInput
             type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={formData.firstName}
+            label="First Name"
             onChange={handleChange}
-            className="input"
             required
           />
 
-          <input
+          <TextInput
             type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={formData.lastName}
+            label="Last Name"
             onChange={handleChange}
             className="input"
             required
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            type="date"
-            name="dateOfBirth"
-            value={formData.dateOfBirth}
-            onChange={handleChange}
-            className="input"
-            required
-          />
-
-          <select
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            className="input"
-            required
-          >
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-
-        <input
+        <TextInput
           type="email"
           name="email"
-          placeholder="Email"
+          label="Email"
           value={formData.email}
           onChange={handleChange}
-          className="input"
           required
         />
 
-        <input
+        <TextInput
           type="tel"
-          name="phone"
-          placeholder="Phone Number"
+          id="phone"
+
+          place="Phone Number"
           value={formData.phone}
           onChange={handleChange}
           className="input"
           required
         />
 
-        {/* Address Information */}
-        <h2 className="text-lg font-semibold mt-4">Address</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            type="text"
-            name="street"
-            placeholder="Street"
-            value={formData.address.street}
-            onChange={handleChange}
-            className="input"
-            required
-          />
+          
+        <Dropdown onChange={handleChange} id = "department"label="Department" dismissOnClick={false}>
 
-          <input
-            type="text"
-            name="city"
-            placeholder="City"
-            value={formData.address.city}
-            onChange={handleChange}
-            className="input"
-            required
-          />
-        </div>
+      <Dropdown.Item>Dashboard</Dropdown.Item>
+      <Dropdown.Item>Settings</Dropdown.Item>
+      <Dropdown.Item>Earnings</Dropdown.Item>
+      <Dropdown.Item>Sign out</Dropdown.Item>
+    </Dropdown>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            type="text"
-            name="state"
-            placeholder="State"
-            value={formData.address.state}
-            onChange={handleChange}
-            className="input"
-            required
-          />
-
-          <input
-            type="text"
-            name="postalCode"
-            placeholder="Postal Code"
-            value={formData.address.postalCode}
-            onChange={handleChange}
-            className="input"
-            required
-          />
-        </div>
-
-        <input
-          type="text"
-          name="department"
-          placeholder="Department"
-          value={formData.department}
-          onChange={handleChange}
-          className="input"
-          required
-        />
-
-        <button
+        <Button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
         >
-          Admit Student
-        </button>
+          Add Staff
+        </Button>
       </form>
     </div>
   );

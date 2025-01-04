@@ -7,7 +7,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import StudentRegistration from "./pages/StudentRegistration";
-import TeachingStaff from "./pages/TeachingStaff.jsx";
+import Staff from "./pages/Staff.jsx";
 import NonTeachingStaff from "./pages/NonTeachingStaff.jsx";
 import CoCurricular from "./pages/CoCurricular.jsx";
 import Academics from "./pages/Academics.jsx";
@@ -20,6 +20,9 @@ import PrivateRoute from "./components/PrivateRoute.jsx";
 import Administration from "./pages/Administration.jsx";
 import AddStaff from "./pages/AddStaff.jsx";
 import StudentPage from "./pages/StudentPage.jsx";
+import StaffPage from "./pages/StaffPage.jsx"
+import Finance from "./pages/Finance.jsx"
+import StudentFinance from "./pages/StudentFinance.jsx";
 
 
 
@@ -44,7 +47,7 @@ export default function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/student-registration" element={<StudentRegistration />} />
-                    <Route path="/teaching-staff" element={<TeachingStaff />} />
+                    <Route path="/school-staff" element={<Staff />} />
                     <Route path="/non-teaching-staff" element={<NonTeachingStaff />} />
                     <Route path="/co-curricular" element={<CoCurricular />} />
                     <Route path="/academics" element={<Academics />} />
@@ -54,10 +57,10 @@ export default function App() {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/administration" element={<Administration />} />
                     <Route path="/add-staff" element={<AddStaff />} />
+                    <Route path="/staff/:staffId" element={<StaffPage />} />
                     <Route path='/student/:studentId' element={<StudentPage />} />
-
-
-
+                    <Route path="/finance" element={<Finance/>}/>
+                    <Route path="/student-finance/:studentId" element={<StudentFinance/>}/>
                   </Routes>
                 </div>
               </div>

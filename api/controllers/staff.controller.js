@@ -18,7 +18,6 @@ export const addStaff = async (req, res, next) => {
         !firstName ||
         !middleName ||
         !lastName ||
-        !DOB ||
         !department
     ) {
         return next(errorHandler(400, 'Please provide all required fields for the Staff.'));
@@ -26,10 +25,11 @@ export const addStaff = async (req, res, next) => {
     if (!req.body) {
         return next(errorHandler(400, 'Please provide all required fields'));
     }
+    const now = new Date()
 
+    const staffId = req.body._id.slice(-5) + "/" + now.getFullYear()
 
-
-    const newStaff = new Staff(req.body)
+    const newStaff = new Staff({...req.body, staffId})
     try {
         const savedStaff = await newStaff.save()
         return res.status(200).json(savedStaff)
@@ -48,13 +48,14 @@ export const getStaff = async (req, res, next) => {
             ...(req.query.firstName && { firstName: req.query.firstName }),
             ...(req.query.LastName && { lastName: req.query.lastName }),
             ...(req.query.middleName && { middleName: req.query.middleName }),
-            ...(req.query.gender && { gender: req.query.gender }),
+            ...(req.query.staffId && { staffId: req.query.staffId }),
             ...(req.query.department && { department: req.query.department }),
-            ...(req.query.phone && { phone: req.query.phone }),
             ...(req.query.searchTerm && {
                 $or: [
                     { firstName: { $regex: req.query.searchTerm, $options: 'i' } },
-                    { lastName: { $regex: req.query.searchTerm, $options: 'i' } }
+                    { lastName: { $regex: req.query.searchTerm, $options: 'i' } },
+                    { staffId: { $regex: req.query.searchTerm, $options: 'i' } }
+
                 ],
             }),
         })
@@ -80,7 +81,7 @@ export const getStaff = async (req, res, next) => {
 
 export const updateStaff = async (req, res, next) => {
     if (!req.user.isAdmin || req.user.id !== req.params.userId) {
-        return next(errorHandler(403, 'You are not allowed to update this staff'));
+        return next(errorHandler(403, 'You are not allowed to perform this action'));
     }
     try {
         const updatedStaff = await Staff.findByIdAndUpdate(
@@ -105,14 +106,25 @@ export const updateStaff = async (req, res, next) => {
 
 export const deleteStaff = async (req, res, next) => {
     if (!req.user.isAdmin || req.user.id !== req.params.userId) {
-        return next(errorHandler(403, 'You are not allowed to delete this post'));
+        return next(errorHandler(403, 'You can not perform this action'));
     }
     try {
         await Staff.findByIdAndDelete(req.params.admNumber);
-        res.status(200).json('The post has been deleted');
+        res.status(200).json('Action completed');
     } catch (error) {
         next(error);
     }
 
 }
+
+export const signout = (req, res, next) => {
+    try {
+      res
+        .clearCookie('access_token')
+        .status(200)
+        .json('User has been signed out');
+    } catch (error) {
+      next(error);
+    }
+  };
 

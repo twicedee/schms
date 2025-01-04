@@ -51,9 +51,9 @@ export default function MainSidebar() {
               Students
             </SidebarItem>
           </Link>
-          <Link to="/teaching-staff">
+          <Link to="/school-staff">
             <SidebarItem icon={FaChalkboardTeacher} as="div">
-              Teachers
+              Staff
             </SidebarItem>
           </Link>
           <Link to="/academics">
@@ -66,9 +66,9 @@ export default function MainSidebar() {
               Co-Curricular
             </SidebarItem>
           </Link>
-          <Link to="/departments">
+          <Link to="/finance">
             <SidebarItem icon={FcDepartment} as="div">
-              Departments
+              Finance
             </SidebarItem>
           </Link>
           <Link to="/administration">

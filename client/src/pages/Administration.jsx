@@ -1,18 +1,20 @@
-import { Button } from 'flowbite-react'
-import React from 'react'
-import { Link } from 'react-router-dom'
+import { Button } from "flowbite-react";
+import React from "react";
+import { Link } from "react-router-dom";
 
 export default function Administration() {
   return (
-    <div className="p-5 flex flex-col mx-auto w-full gap-5">
-
+    <div className="p-10 mt-10 flex flex-col mx-auto w-full gap-5">
+      <div className="flex-1 w-full grid grid-cols-1 md:grid-cols-2 gap-4 ">
+        
         <Link to="/student-registration">
-            <Button>Add Student</Button>
+          <Button className="w-full">Add Student</Button>
         </Link>
 
         <Link to="/add-staff">
-            <Button>Add Staff</Button>
+          <Button className="w-full">Add Staff</Button>
         </Link>
+      </div>
     </div>
-  )
+  );
 }
