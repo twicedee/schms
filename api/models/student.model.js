@@ -60,9 +60,8 @@ const studentSchema = new mongoose.Schema(
         },
 
         feeBalance: {
-            type: Number,
-            default: 30000
-
+            type: Map,
+            of: Number,
         }
 
 

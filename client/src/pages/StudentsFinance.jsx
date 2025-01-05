@@ -1,49 +1,8 @@
 import React from "react";
-import {
-  Avatar,
-  List,
-  Spinner,
-  Button,
-  Table,
-  TableCell,
-} from "flowbite-react";
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Table } from "flowbite-react";
 
-export default function Students() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [students, setStudents] = useState([]); // State to store the list of students
+export default function StudentsFinance() {
 
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/student/get-students`);
-        const data = await res.json();
-        if (!res.ok) {
-          setError(true);
-          setLoading(false);
-          return;
-        }
-        setStudents(data.students);
-        setLoading(false);
-        setError(false);
-      } catch (err) {
-        setError(true);
-        setLoading(false);
-      }
-    };
-    fetchStudents();
-  }, []); // Run only once when the component mounts
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Spinner size="xl" />
-      </div>
-    );
-  }
 
   return (
     <div className="mx-auto w-full max-w-4xl">
@@ -61,9 +20,12 @@ export default function Students() {
             <Table.Head>
               <Table.HeadCell>Adm. No</Table.HeadCell>
               <Table.HeadCell>Student Photo</Table.HeadCell>
+
               <Table.HeadCell>Name</Table.HeadCell>
               <Table.HeadCell>Gender</Table.HeadCell>
               <Table.HeadCell>Grade</Table.HeadCell>
+              <Table.HeadCell>Balance</Table.HeadCell>
+
               <Table.HeadCell>
                 <span className="sr-only">View</span>
               </Table.HeadCell>
@@ -95,10 +57,15 @@ export default function Students() {
                       {student.grade}
                     </p>
                   </Table.Cell>
+                  <Table.Cell>
+                    <p className="text-md text-gray-500 dark:text-gray-400">
+                      {student.feeBalance}
+                    </p>
+                  </Table.Cell>
 
                   <Table.Cell>
                     <Link
-                      to={`/student/${student.admNumber}`}
+                      to={`/student-finance/${student.admNumber}`}
                       className="text-blue-600 dark:text-blue-400 hover:underline"
                     >
                       View
@@ -113,5 +80,3 @@ export default function Students() {
     </div>
   );
 }
-
-

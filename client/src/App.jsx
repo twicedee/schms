@@ -23,6 +23,11 @@ import StudentPage from "./pages/StudentPage.jsx";
 import StaffPage from "./pages/StaffPage.jsx"
 import Finance from "./pages/Finance.jsx"
 import StudentFinance from "./pages/StudentFinance.jsx";
+import StudentsFinance from "./pages/StudentsFinance.jsx";
+import CreateFeeStructure from "./pages/CreateFeeStructure.jsx";
+import ViewFeeStructure from "./pages/ViewFeeStructure.jsx"
+import FeeStructure from "./pages/FeeStructure.jsx"
+
 
 
 
@@ -61,6 +66,15 @@ export default function App() {
                     <Route path='/student/:studentId' element={<StudentPage />} />
                     <Route path="/finance" element={<Finance/>}/>
                     <Route path="/student-finance/:studentId" element={<StudentFinance/>}/>
+                    <Route path="/students-finance" element={<StudentsFinance/>}/>
+                    <Route path="/fee-structure-create" element={<CreateFeeStructure/>}/>
+                    <Route path="/fee-structure/:feeStructureId" element={<FeeStructure/>}/>
+                    <Route path="/view-fee-structures" element={<ViewFeeStructure/>}/>
+
+
+
+
+
                   </Routes>
                 </div>
               </div>

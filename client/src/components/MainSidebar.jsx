@@ -1,12 +1,11 @@
 import { Sidebar, SidebarItem, SidebarItemGroup } from "flowbite-react";
 import React from "react";
 import { AiFillHome } from "react-icons/ai";
-import { FaUserCircle, FaChalkboardTeacher, FaSignOutAlt } from "react-icons/fa";
+import { FaUserCircle, FaChalkboardTeacher, FaSignOutAlt, FaMoneyCheckAlt } from "react-icons/fa";
 import { HiAcademicCap } from "react-icons/hi2";
 import { PiStudentBold } from "react-icons/pi";
 import { SiGoogleclassroom } from "react-icons/si";
 import { MdSportsSoccer, MdAdminPanelSettings } from "react-icons/md";
-import { FcDepartment } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import { signoutSuccess } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,7 +32,7 @@ export default function MainSidebar() {
     }
   };
   return (
-    <Sidebar className="max-w-56 md:w-50 h-full">
+    <Sidebar className=" lg:w-56 lg:icon h-full  ">
       <Sidebar.Items>
         <SidebarItemGroup className="flex flex-col gap-2 divide-y divide-gray-200 dark:divide-gray-700">
           <Link to="/">
@@ -67,7 +66,7 @@ export default function MainSidebar() {
             </SidebarItem>
           </Link>
           <Link to="/finance">
-            <SidebarItem icon={FcDepartment} as="div">
+            <SidebarItem icon={FaMoneyCheckAlt} as="div">
               Finance
             </SidebarItem>
           </Link>

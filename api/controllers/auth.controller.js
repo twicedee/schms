@@ -1,32 +1,63 @@
 import User from '../models/user.model.js';
 import bcryptjs from 'bcryptjs';
+import Invite from '../models/invite.model.js'
 import { errorHandler } from '../utils/error.js';
 import jwt from 'jsonwebtoken';
 
 export const signup = async (req, res, next) => {
-  const {username, email, password } = req.body;
+  const { firstName, initials, lastName, contact, username, email, password } = req.body;
 
   if (
+    !initials ||
+    !firstName ||
+    !lastName ||
+    !contact ||
     !username ||
     !email ||
     !password ||
     username === '' ||
     email === '' ||
-    password === ''
+    password === '' ||
+    initials === '' ||
+    firstName === '' ||
+    lastName === '' ||
+    contact === ''
   ) {
     next(errorHandler(400, 'All fields are required'));
   }
 
-  const hashedPassword = bcryptjs.hashSync(password, 10);
-
-  const newUser = new User({
-    username,
-    email,
-    password: hashedPassword,
-  });
-
   try {
+    // Check if the invite token exists and is valid
+    const invite = await Invite.findOne({ token, email });
+
+    if (!invite) {
+      return next(errorHandler(400, 'Invalid or expired invite token'));
+    }
+
+    if (invite.isUsed) {
+      return next(errorHandler(400, 'Invite token has already been used'));
+    }
+
+    // Hash the password
+    const hashedPassword = bcryptjs.hashSync(password, 10);
+
+    // Create a new user
+    const newUser = new User({
+      initials,
+      firstName,
+      lastName,
+      contact,
+      username,
+      email,
+      password: hashedPassword,
+    });
+
     await newUser.save();
+
+    // Mark the invite token as used
+    invite.isUsed = true;
+    await invite.save();
+
     res.json('Signup successful');
   } catch (error) {
     next(error);
