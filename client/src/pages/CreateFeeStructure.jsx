@@ -1,34 +1,60 @@
-import { Button, Select, TextInput } from "flowbite-react";
-import React, { useState } from "react";
+import { Button, Select, TextInput, Table } from "flowbite-react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import UpdateFees from "../components/UpdateFees";
 
 export default function CreateFeeStructure() {
   const [error, setError] = useState(null);
+  const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
-  const [feeStructure, setFeeStructure] = useState({
-    level: "",
-    term: "",
-    amount: "",
-  });
+  const [feeStructure, setFeeStructure] = useState([]);
   const navigate = useNavigate();
 
-  const levels = ["Lower School", "Middle School", "Junior High School", "Senior High School"];
+  const levels = [
+    "Lower School",
+    "Middle School",
+    "Junior High School",
+    "Senior High School",
+  ];
   const terms = ["Term 1", "Term 2", "Term 3"];
 
-  const handleInputChange = (e) => {
-    const { id, value } = e.target;
-    setFeeStructure((prev) => ({
-      ...prev,
-      [id]: value,
-    }));
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
+
+  useEffect(() => {
+    const fetchFeeStructure = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/fee/get-fee-structure");
+        const data = await res.json();
+        if (!res.ok) {
+          setError(true);
+          setLoading(false);
+          return;
+        }
+        if (Array.isArray(data)) {
+          setFeeStructure(data);
+          setLoading(false);
+          setError(false);
+        } else {
+          setLoading(false);
+          setError("Expected fee structure to be an array.");
+          console.error("Expected fee structure to be an array.");
+        }
+      } catch (err) {
+        setError(true);
+        setLoading(false);
+      }
+    };
+    fetchFeeStructure();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { level, term, amount } = feeStructure;
-
-    if (!level || !term || !amount) {
+    //
+    if (!formData.level || !formData.term || !formData.amount) {
       setError("Please provide level, term, and amount.");
       return;
     }
@@ -38,7 +64,7 @@ export default function CreateFeeStructure() {
       const res = await fetch("/api/fee/create-fee-structure", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(feeStructure),
+        body: JSON.stringify(formData),
       });
 
       const data = await res.json();
@@ -50,7 +76,7 @@ export default function CreateFeeStructure() {
 
       setError(null);
       setLoading(false);
-      navigate("/fee-structure-view");
+      navigate("/fee-structure-create");
     } catch (err) {
       setError("An error occurred while saving the fee structure.");
       setLoading(false);
@@ -58,24 +84,21 @@ export default function CreateFeeStructure() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-md">
+    <div className="m-20 flex flex-col ">
       <div className="mb-4 text-center">
         <h1 className="text-2xl font-bold leading-none text-gray-900 dark:text-white">
           Create Fee Structure
         </h1>
       </div>
-      {error && <p className="mb-4 text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="level" className="block mb-2 text-sm font-medium text-gray-900">
+          <label
+            htmlFor="level"
+            className="block mb-2 text-sm font-medium text-gray-900"
+          >
             Select Level
           </label>
-          <Select
-            id="level"
-            required
-            value={feeStructure.level}
-            onChange={handleInputChange}
-          >
+          <Select id="level" required onChange={handleChange}>
             <option value="">Choose a level</option>
             {levels.map((level) => (
               <option key={level} value={level}>
@@ -85,15 +108,13 @@ export default function CreateFeeStructure() {
           </Select>
         </div>
         <div>
-          <label htmlFor="term" className="block mb-2 text-sm font-medium text-gray-900">
+          <label
+            htmlFor="term"
+            className="block mb-2 text-sm font-medium text-gray-900"
+          >
             Select Term
           </label>
-          <Select
-            id="term"
-            required
-            value={feeStructure.term}
-            onChange={handleInputChange}
-          >
+          <Select id="term" required onChange={handleChange}>
             <option value="">Choose a term</option>
             {terms.map((term) => (
               <option key={term} value={term}>
@@ -103,7 +124,10 @@ export default function CreateFeeStructure() {
           </Select>
         </div>
         <div>
-          <label htmlFor="amount" className="block mb-2 text-sm font-medium text-gray-900">
+          <label
+            htmlFor="amount"
+            className="block mb-2 text-sm font-medium text-gray-900"
+          >
             Fee Amount
           </label>
           <TextInput
@@ -111,8 +135,7 @@ export default function CreateFeeStructure() {
             type="number"
             required
             placeholder="Enter fee amount"
-            value={feeStructure.amount}
-            onChange={handleInputChange}
+            onChange={handleChange}
           />
         </div>
         <div className="mt-4 flex justify-end">
@@ -120,9 +143,40 @@ export default function CreateFeeStructure() {
             {loading ? "Saving..." : "Save Fee Structure"}
           </Button>
         </div>
+        {error && <p className="mb-4 text-red-500">{error}</p>}
       </form>
 
-      
+      <div className="border border-gray-500 rounded-md p-5 mt-8">
+        <div className="mt-2">
+          <h2 className="mb-4 text-xl font-bold">Fee Structure</h2>
+          <Table>
+            <Table.Head>
+              <Table.HeadCell>Level</Table.HeadCell>
+              {terms.map((term) => (
+                <Table.HeadCell key={term}>{term}</Table.HeadCell>
+              ))}
+            </Table.Head>
+            <Table.Body>
+              {levels.map((level) => (
+                <Table.Row key={level}>
+                  <Table.Cell className="font-medium">{level}</Table.Cell>
+                  {terms.map((term) => {
+                    const fee = feeStructure.find(
+                      (item) => item.level === level && item.term === term
+                    );
+                    return (
+                      <Table.Cell key={term}>
+                        {fee ? fee.amount : "-"}
+                      </Table.Cell>
+                    );
+                  })}
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
+        </div>
+        <div className="align-bottom mt-2"><UpdateFees/></div>
+      </div>
     </div>
   );
 }

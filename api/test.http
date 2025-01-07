@@ -1,8 +1,5 @@
-POST http://localhost:3000/api/fee/create-fee-structure 
-content-type: application/json
 
-{
-    "term": "Term 1",
-    "level": "Lower School",
-    "amount": 30000
-}
+
+
+GET http://localhost:3000/api/student/get-students
+

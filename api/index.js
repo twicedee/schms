@@ -10,6 +10,9 @@ dotenv.config()
 
 mongoose.connect(process.env.MONGO).then(() => { console.log("MonoDB is connected") }).catch((err) => { console.log(err) })
 
+
+const __dirname = path.resolve();
+
 const app = express()
 
 
@@ -26,6 +29,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/student', studentRoutes)
 app.use('/api/fee', feeRoutes)
 
+app.use(express.static(path.join(__dirname, '/client/dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+});
 
 
 

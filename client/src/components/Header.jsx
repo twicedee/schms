@@ -17,7 +17,7 @@ export default function Header() {
         {currentUser ? (
           <Avatar alt="user" img={currentUser.profilePicture} rounded>
             <div className="font-medium dark:text-white">
-              <div>Jese Leos</div>
+              <div>{currentUser.initials} {currentUser.firstName}{currentUser.lastName}</div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
                 {currentUser.username}
               </div>

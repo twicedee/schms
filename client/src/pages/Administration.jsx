@@ -1,6 +1,7 @@
 import { Button } from "flowbite-react";
 import React from "react";
 import { Link } from "react-router-dom";
+import SignUpInvite from "../components/SignUpInvite";
 
 export default function Administration() {
   return (
@@ -11,9 +12,7 @@ export default function Administration() {
           <Button className="w-full">Add Student</Button>
         </Link>
 
-        <Link to="/add-staff">
-          <Button className="w-full">Add Staff</Button>
-        </Link>
+        <SignUpInvite/>
       </div>
     </div>
   );

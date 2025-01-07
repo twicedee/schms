@@ -1,8 +1,11 @@
 import Invite from '../models/invite.model.js';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv'
 
 export const sendInvite = async (req, res, next) => {
+  dotenv.config()
+
   const { email } = req.body;
 
   if (!email) {
@@ -14,10 +17,8 @@ export const sendInvite = async (req, res, next) => {
     // Generate a unique token
     const token = crypto.randomBytes(20).toString('hex');
 
-    // Set an expiration time (e.g., 24 hours from now)
     const expirationTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-    // Save the invite token to the database
     const newInvite = new Invite({ email, token, expirationTime });
     await newInvite.save();
 
@@ -25,13 +26,13 @@ export const sendInvite = async (req, res, next) => {
     const transporter = nodemailer.createTransport({
       service: 'Gmail',
       auth: {
-        user: 'your-email@example.com',
-        pass: 'your-email-password',
+        user: process.env.EMAIL,
+        pass: process.env.PASS,
       },
     });
 
     await transporter.sendMail({
-      from: '"Your Website" <your-email@example.com>',
+      from: '"Mashimoni CC" <info@mashimonicc.com>',
       to: email,
       subject: 'You are Invited!',
       text: `Click here to sign up: https://yourwebsite.com/signup?token=${token}`,

@@ -1,13 +1,15 @@
 import express from 'express';
 import { verifyToken } from '../utils/verifyUser.js';
-import { createFeeStructure } from '../controllers/feeStructure.controller.js';
+import { createFeeStructure, getFeeStructures } from '../controllers/feeStructure.controller.js';
+import { bulkUpdateStudentFees, getStudentFees } from '../controllers/fee.controller.js';
 
 const router = express.Router();
 
 router.post("/create-fee-structure", verifyToken, createFeeStructure)
-// router.post("/get-fee-structure", verifyToken, createFeeStructure)
-// router.post("/fee-structure-create", verifyToken, createFeeStructure)
+router.get("/get-fee-structure", getFeeStructures)
+router.get("/get-student-fee", getStudentFees)
 // router.post("/fee-structure-create", verifyToken, createFeeStructure)
 
+router.put("/update-fees", verifyToken, bulkUpdateStudentFees);
 
 export default router;

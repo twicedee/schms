@@ -59,7 +59,6 @@ export const getStudents = async (req, res, next) => {
             ...(req.query.level && { level: req.query.level }),
             ...(req.query.grade && { grade: req.query.grade }),
             ...(req.query.feeBalance && { feeBalance: req.query.feeBalance }),
-
             ...(req.query.searchTerm && {
                 $or: [
                     { admNumber: { $regex: req.query.searchTerm, $options: 'i' } },
@@ -71,6 +70,8 @@ export const getStudents = async (req, res, next) => {
             .limit(limit);
 
         const totalstudents = await Student.countDocuments();
+
+        
 
         const now = new Date();
 
