@@ -1,7 +1,7 @@
 import express from 'express';
 import { google, signin, signup } from '../controllers/auth.controller.js';
 import { sendInvite } from '../controllers/invite.controller.js';
-import { verifyToken } from '../utils/VerifyUser.js';
+import { verifyToken } from '../utils/verifyUser.js';
 
 const router = express.Router();
 
