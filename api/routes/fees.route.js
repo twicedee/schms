@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyToken } from '../utils/verifyUser.js';
+import { verifyToken } from '../utils/VerifyUser.js';
 import { createFeeStructure, getFeeStructures } from '../controllers/feeStructure.controller.js';
 import { bulkUpdateStudentFees, getStudentFees } from '../controllers/fee.controller.js';
 
