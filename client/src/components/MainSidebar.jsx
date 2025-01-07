@@ -32,7 +32,7 @@ export default function MainSidebar() {
     }
   };
   return (
-    <Sidebar className=" lg:w-56 lg:icon h-full  ">
+    <Sidebar className=" lg:w-56 h-full  ">
       <Sidebar.Items>
         <SidebarItemGroup className="flex flex-col gap-2 divide-y divide-gray-200 dark:divide-gray-700">
           <Link to="/">

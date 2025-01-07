@@ -13,7 +13,7 @@ export default function StudentsFinance() {
     const fetchStudents = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/student/get-students`);
+        const res = await fetch("/api/student/get-students");
         const data = await res.json();
         if (!res.ok) {
           setError(true);
