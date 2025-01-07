@@ -70,11 +70,6 @@ export default function App() {
                     <Route path="/fee-structure-create" element={<CreateFeeStructure/>}/>
                     <Route path="/fee-structure/:feeStructureId" element={<FeeStructure/>}/>
                     <Route path="/view-fee-structures" element={<ViewFeeStructure/>}/>
-
-
-
-
-
                   </Routes>
                 </div>
               </div>

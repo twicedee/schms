@@ -6,6 +6,8 @@ import authRoutes from './routes/auth.route.js'
 import studentRoutes from './routes/student.route.js'
 import userRoutes from './routes/user.route.js'
 import feeRoutes from './routes/fees.route.js'
+import path from 'path';
+
 dotenv.config()
 
 mongoose.connect(process.env.MONGO).then(() => { console.log("MonoDB is connected") }).catch((err) => { console.log(err) })
