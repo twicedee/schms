@@ -8,7 +8,6 @@ const router = express.Router();
 router.post("/create-fee-structure", verifyToken, createFeeStructure)
 router.get("/get-fee-structure", getFeeStructures)
 router.get("/get-student-fee", getStudentFees)
-// router.post("/fee-structure-create", verifyToken, createFeeStructure)
 
 router.put("/update-fees", verifyToken, bulkUpdateStudentFees);
 

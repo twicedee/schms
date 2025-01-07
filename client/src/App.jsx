@@ -18,9 +18,9 @@ import Department from "./pages/Department.jsx";
 import Classes from "./pages/Classes.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import Administration from "./pages/Administration.jsx";
-import AddStaff from "./pages/AddStaff.jsx";
+// import AddStaff from "./pages/AddStaff.jsx";
 import StudentPage from "./pages/StudentPage.jsx";
-import StaffPage from "./pages/StaffPage.jsx"
+// import StaffPage from "./pages/StaffPage.jsx"
 import Finance from "./pages/Finance.jsx"
 import StudentFinance from "./pages/StudentFinance.jsx";
 import StudentsFinance from "./pages/StudentsFinance.jsx";
