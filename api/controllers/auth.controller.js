@@ -27,7 +27,7 @@ export const signup = async (req, res, next) => {
   }
 
   try {
-    // Check if the invite token exists and is valid
+    
     const invite = await Invite.findOne({ token, email });
 
     if (!invite) {
