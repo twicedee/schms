@@ -35,7 +35,7 @@ export const sendInvite = async (req, res, next) => {
       from: '"Mashimoni CC" <info@mashimonicc.com>',
       to: email,
       subject: 'You are Invited!',
-      text: `Click here to sign up: https://yourwebsite.com/signup?token=${token}`,
+      text: `Click here to sign up: https://mashimoni-cc.onrender.com/sign-up?token=${token}`,
     });
 
     res.json('Invite sent successfully');
