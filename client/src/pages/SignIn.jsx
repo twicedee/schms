@@ -46,12 +46,12 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen mt-20">
-      <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
+    <div className="min-h-screen m-20">
+      <div className="flex p-3 max-w-3xl m-auto flex-col md:flex-row align-baseline gap-5">
         {/* left */}
-        <div className="flex-1">
-          <p>
-            Elimu School
+        <div className="text-center flex flex-col justify-start m-10 pb-5">
+          <p className="font-bold text-2xl">
+            Mashimoni Child Care
           </p>
           <h1 className="text-sm mt-5">
             <span className="font-bold">Motto:</span> Education is the key to success
@@ -94,12 +94,7 @@ export default function SignIn() {
               )}
             </Button>
           </form>
-          <div className="flex gap-2 text-sm mt-5">
-            <span>Dont Have an account?</span>
-            <Link to="/sign-up" className="text-blue-500">
-              Sign Up
-            </Link>
-          </div>
+          
           {errorMessage && (
             <Alert className="mt-5" color="failure">
               {errorMessage}

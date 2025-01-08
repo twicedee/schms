@@ -8,12 +8,15 @@ export default function Header() {
   const now = new Date();
   return (
     <Navbar className="border-b-2">
-      <span className="text-center text-lg bg-gradient-to-r">ELIMU SCHOOL</span>
+      <div className="flex flex-row justify-center gap-1">
+      <span className="text-center text-lg font-semibold">Mashimoni Child Care</span>
 
-      <div className="flex flex-row justify-end gap-1">
-        <span className="justify-center align-bottom flex flex-col">{now.toLocaleString()}</span>
+      
+        
       </div>
+      <span className="justify-end px-3">{now.toLocaleDateString()}</span>
       <div>
+      
         {currentUser ? (
           <Avatar alt="user" img={currentUser.profilePicture} rounded>
             <div className="font-medium dark:text-white">
