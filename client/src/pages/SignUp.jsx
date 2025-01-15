@@ -41,7 +41,7 @@ export default function SignUp() {
     try {
       setLoading(true);
       setErrorMessage(null);
-      const res = await fetch("/api/auth/signup", {
+      const res = await fetch(`/api/auth/signup?token=${formData.token}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -139,7 +139,7 @@ export default function SignUp() {
               {loading ? (
                 <>
                   <Spinner size="sm" />
-                  <span className="pl-3">Loading...</span>
+                  <span className="pl-3">signing up...</span>
                 </>
               ) : (
                 "Sign Up"
