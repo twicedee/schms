@@ -61,7 +61,7 @@ export default function Finance() {
         <Link to="/students-finance">
           <Button className="w-full">Check students Arrears</Button>
         </Link>
-        <Link to="/view-fee-structures">
+        <Link to="/fee-structure">
           <Button className="w-full">Check Fee Structures</Button>
         </Link>
       </div>

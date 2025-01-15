@@ -45,10 +45,10 @@ export default function FeeStructure() {
   return (
     <div>
       {" "}
-      <div className="border border-gray-500 rounded-md p-5 mt-8">
+      <div className=" p-5 m-8">
         <div className="mt-2">
           <h2 className="mb-4 text-xl font-bold">Fee Structure</h2>
-          <Table>
+          <Table className="border border-gray-500 rounded-md">
             <Table.Head>
               <Table.HeadCell>Level</Table.HeadCell>
               {terms.map((term) => (

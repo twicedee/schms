@@ -68,7 +68,7 @@ export default function App() {
                     <Route path="/student-finance/:studentId" element={<StudentFinance/>}/>
                     <Route path="/students-finance" element={<StudentsFinance/>}/>
                     <Route path="/fee-structure-create" element={<CreateFeeStructure/>}/>
-                    <Route path="/fee-structure/:feeStructureId" element={<FeeStructure/>}/>
+                    <Route path="/fee-structure" element={<FeeStructure/>}/>
                     <Route path="/view-fee-structures" element={<ViewFeeStructure/>}/>
                   </Routes>
                 </div>
