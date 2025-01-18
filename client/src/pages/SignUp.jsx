@@ -62,15 +62,19 @@ export default function SignUp() {
     <div className="min-h-screen m-20">
       <div className="flex p-3 w-full mx-auto flex-col md:flex-row md:items-center gap-5">
         {/* left */}
-        <div className="flex-1">
-          <p>Mashimoni Moyo Academy </p>
-          <h1 className="text-sm mt-5 font-italic">
+        <div className="text-center flex flex-col justify-start m-10 pb-5">
+          <div>
+            <img src="/mashimoni.png" />
+          </div>
+
+          <p className="font-bold text-2xl">Mashimoni Moyo Academy</p>
+          <h1 className="text-sm mt-5">
             <span className="font-bold">Motto:</span> Learn Today Lead Tomorrow
           </h1>
         </div>
         {/* right */}
 
-        <div className="flex-1 w-full">
+        <div className="flex-1 w-full my-auto">
           <form className="grid grid-cols-1 lg:grid-cols-2  gap-4" onSubmit={handleSubmit}>
             <div>
               <Label value="Your Initials" />

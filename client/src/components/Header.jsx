@@ -2,6 +2,7 @@ import { Button, Navbar, Avatar } from "flowbite-react";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { current } from "@reduxjs/toolkit";
 
 export default function Header({ onToggleSidebar }) {
   const { currentUser } = useSelector((state) => state.user);
@@ -15,7 +16,8 @@ export default function Header({ onToggleSidebar }) {
       </div>
       <span className="hidden lg:block px-3">{now.toLocaleDateString()}</span>
       <div className="flex items-center gap-4">
-        <Navbar.Toggle onClick={onToggleSidebar} />
+        {currentUser? (<Navbar.Toggle onClick={onToggleSidebar} />):(<></>)}
+        
         {currentUser ? (
           <Avatar alt="user" img={currentUser.profilePicture} rounded className="hidden md:inline-flex lg:inline-flex">
             <div className="font-medium dark:text-white">
