@@ -117,11 +117,11 @@ export const updateStudent = async (req, res, next) => {
 
 export const deleteStudent = async (req, res, next) => {
     if (!req.user.isAdmin || req.user.id !== req.params.userId) {
-        return next(errorHandler(403, 'You are not allowed to delete this post'));
+        return next(errorHandler(403, 'You are not allowed to delete this student'));
     }
     try {
-        await Student.findByIdAndDelete(req.params.admNumber);
-        res.status(200).json('The post has been deleted');
+        await Student.findOneAndDelete({ admNumber: req.params.admNumber });
+        res.status(200).json('This student has been deleted');
     } catch (error) {
         next(error);
     }

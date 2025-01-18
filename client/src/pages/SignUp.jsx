@@ -14,15 +14,16 @@ export default function SignUp() {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
 
-  useEffect(() => {
-    // Get the token from URL query parameters
-    const token = searchParams.get('token');
-    if (token) {
-      setFormData((prevData) => ({ ...prevData, token }));
-    } else {
-      setErrorMessage('Invite token is missing. Please check your invite link.');
-    }
-  }, [searchParams]);
+  // useEffect(() => {
+  //   // Get the token from URL query parameters
+  //   const token = searchParams.get('token');
+  //   if (token) {
+  //     setFormData((prevData) => ({ ...prevData, token }));
+  //   } else {
+  //     setErrorMessage('Invite token is missing. Please check your invite link.');
+  //   }
+  // }, [searchParams]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
@@ -31,9 +32,6 @@ export default function SignUp() {
       !formData.firstName ||
       !formData.initials ||
       !formData.lastName ||
-      !formData.contact ||
-      !formData.gender ||
-      !formData.grade ||
       !formData.password
     ) {
       return setErrorMessage("Please fill out all fields.");
@@ -41,7 +39,7 @@ export default function SignUp() {
     try {
       setLoading(true);
       setErrorMessage(null);
-      const res = await fetch(`/api/auth/signup?token=${formData.token}`, {
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -57,6 +55,7 @@ export default function SignUp() {
     } catch (error) {
       setErrorMessage(error.message);
       setLoading(false);
+
     }
   };
   return (
@@ -64,10 +63,9 @@ export default function SignUp() {
       <div className="flex p-3 w-full mx-auto flex-col md:flex-row md:items-center gap-5">
         {/* left */}
         <div className="flex-1">
-          <p>Elimu School</p>
+          <p>Mashimoni Moyo Academy </p>
           <h1 className="text-sm mt-5 font-italic">
-            <span className="font-bold">Motto:</span> Education is the key to
-            success
+            <span className="font-bold">Motto:</span> Learn Today Lead Tomorrow
           </h1>
         </div>
         {/* right */}
@@ -78,8 +76,8 @@ export default function SignUp() {
               <Label value="Your Initials" />
               <TextInput
                 type="text"
-                placeholder=""
-                id="Initials"
+                placeholder="Mr., Mrs., Dr., Miss., Dr."
+                id="initials"
                 onChange={handleChange}
               />
             </div>
@@ -129,7 +127,6 @@ export default function SignUp() {
                 onChange={handleChange}
               />
             </div>
-            <input type="hidden" name="token" value={formData.token} />
 
             <Button
               gradientDuoTone="purpleToPink"

@@ -5,13 +5,12 @@ import { errorHandler } from '../utils/error.js';
 import jwt from 'jsonwebtoken';
 
 export const signup = async (req, res, next) => {
-  const { firstName, initials, lastName, contact, username, email, password } = req.body;
+  const { firstName, initials, lastName, username, email, password } = req.body;
 
   if (
     !initials ||
     !firstName ||
     !lastName ||
-    !contact ||
     !username ||
     !email ||
     !password ||
@@ -20,23 +19,22 @@ export const signup = async (req, res, next) => {
     password === '' ||
     initials === '' ||
     firstName === '' ||
-    lastName === '' ||
-    contact === ''
+    lastName === '' 
   ) {
     next(errorHandler(400, 'All fields are required'));
   }
 
   try {
     
-    const invite = await Invite.findOne({ token, email });
+    // const invite = await Invite.findOne({ token, email });
 
-    if (!invite) {
-      return next(errorHandler(400, 'Invalid or expired invite token'));
-    }
+    // if (!invite) {
+    //   return next(errorHandler(400, 'Invalid or expired invite token'));
+    // }
 
-    if (invite.isUsed) {
-      return next(errorHandler(400, 'Invite token has already been used'));
-    }
+    // if (invite.isUsed) {
+    //   return next(errorHandler(400, 'Invite token has already been used'));
+    // }
 
     // Hash the password
     const hashedPassword = bcryptjs.hashSync(password, 10);
@@ -46,7 +44,6 @@ export const signup = async (req, res, next) => {
       initials,
       firstName,
       lastName,
-      contact,
       username,
       email,
       password: hashedPassword,
@@ -54,9 +51,6 @@ export const signup = async (req, res, next) => {
 
     await newUser.save();
 
-    // Mark the invite token as used
-    invite.isUsed = true;
-    await invite.save();
 
     res.json('Signup successful');
   } catch (error) {

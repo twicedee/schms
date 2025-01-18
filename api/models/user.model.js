@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema(
     },
     initials: {
       type: String,
-      enum: ["Mr.", "Mrs.", "Miss.", "Dr."],
+      //enum: ["Mr.", "Mrs.", "Miss.", "Dr."],
       required: true,
     },
 
@@ -28,10 +28,10 @@ const userSchema = new mongoose.Schema(
       required: true,
 
     },
-    contact: {
-      type: Number,
-      required: true
-    },
+    // contact: {
+    //   type: Number,
+    //   required: false
+    // },
     username: {
       type: String,
       required: true,
