@@ -59,14 +59,11 @@ export default function SignUp() {
     }
   };
   return (
-    <div className="min-h-screen m-20">
-      <div className="flex p-3 w-full mx-auto flex-col md:flex-row md:items-center gap-5">
+    <div className="min-h-screen mx-10">
+      <div className="flex p-3 max-w-full m-auto flex-col md:flex-row align-baseline gap-5">
         {/* left */}
-        <div className="text-center flex flex-col justify-start m-10 pb-5">
-          <div>
-            <img src="/mashimoni.png" />
-          </div>
-
+        <div className="text-center flex flex-col justify-start my-2 px-5">
+            <img src="/mashimoni.png" className="flex m-auto"/>
           <p className="font-bold text-2xl">Mashimoni Moyo Academy</p>
           <h1 className="text-sm mt-5">
             <span className="font-bold">Motto:</span> Learn Today Lead Tomorrow

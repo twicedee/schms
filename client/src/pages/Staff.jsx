@@ -29,77 +29,7 @@ export default function Staff() {
             <h1 className="text-sm text-gray-600">Subjects Teaching</h1>
           </div>
         </div>
-        <div className="m-3 max-w-auto grid grid-cols-3 border rounded-xl border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800">
-          <div className="flex-auto p-2">
-            <Avatar size="xl" />
-          </div>
-          <div className="p-3 flex flex-col col-span-2 gap-2">
-            <h1>Teachers Name</h1>
-            <h1>Ranks if applicable</h1>
-            <h1>Department</h1>
-            <h1>Subjects Teaching</h1>
-          </div>
-        </div>
-
-        <div className="m-3 grid grid-cols-3 border rounded-xl border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800">
-          <div className="p-2 shrink-0">
-            <Avatar size="xl" />
-          </div>
-          <div className="p-3 flex flex-col col-span-2 gap-2">
-            <h1>Teachers Name</h1>
-            <h1>Ranks if applicable</h1>
-            <h1>Department</h1>
-            <h1>Subjects Teaching</h1>
-          </div>
-        </div>
-
-        <div className="m-3 grid grid-cols-3 border rounded-xl border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800">
-          <div className="p-2 shrink-0">
-            <Avatar size="xl" />
-          </div>
-          <div className="p-3 flex flex-col col-span-2 gap-2">
-            <h1>Teachers Name</h1>
-            <h1>Ranks if applicable</h1>
-            <h1>Department</h1>
-            <h1>Subjects Teaching</h1>
-          </div>
-        </div>
-
-        <div className="m-3 grid grid-cols-3 border rounded-xl border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800">
-          <div className="p-2 shrink-0">
-            <Avatar size="xl" />
-          </div>
-          <div className="p-3 flex flex-col col-span-2 gap-2">
-            <h1>Teachers Name</h1>
-            <h1>Ranks if applicable</h1>
-            <h1>Department</h1>
-            <h1>Subjects Teaching</h1>
-          </div>
-        </div>
-
-        <div className="m-3 grid grid-cols-3 border rounded-xl border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800">
-          <div className="p-2 shrink-0">
-            <Avatar size="xl" />
-          </div>
-          <div className="p-3 flex flex-col col-span-2 gap-2">
-            <h1>Teachers Name</h1>
-            <h1>Ranks if applicable</h1>
-            <h1>Department</h1>
-            <h1>Subjects Teaching</h1>
-          </div>
-        </div>
-
-        <div className="flex-0 m-3 grid grid-cols-3 border rounded-xl border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800">
-          <div className="p-2">
-            <Avatar className="shrink-0" size="xl" />
-          </div>
-          <div className="p-3 flex flex-col col-span-2 gap-2">
-            <h1>Teachers Name</h1>
-            <h1>Ranks if applicable</h1>
-            <h1>Department</h1>
-            <h1>Subjects Teaching</h1>
-          </div>
-        </div>
+        
       </div>
     </div>
   );

@@ -134,3 +134,37 @@ export const getUser = async (req, res, next) => {
         next(error);
     }
 };
+
+export const updateUserStatus = async (req, res, next) => {
+    try {
+        // Ensure the user making the request is an admin
+        if (!req.user.isAdmin) {
+            return next(errorHandler(403, 'Only admins can perform this action'));
+        }
+
+        // Validate that the user to be updated exists
+        const user = await User.findById(req.params.userId);
+        if (!user) {
+            return next(errorHandler(404, 'User not found'));
+        }
+
+        // Update the boolean statuses
+        const updatedUser = await User.findByIdAndUpdate(
+            req.params.userId,
+            {
+                $set: {
+                    isAdmin: req.body.isAdmin !== undefined ? req.body.isAdmin : user.isAdmin,
+                    isClassTeacher: req.body.isClassTeacher !== undefined ? req.body.isClassTeacher : user.isClassTeacher,
+                    isStaff: req.body.isStaff !== undefined ? req.body.isStaff : user.isStaff,
+                },
+            },
+            { new: true }
+        );
+
+        const { password, ...rest } = updatedUser._doc;
+        res.status(200).json(rest);
+    } catch (error) {
+        next(error);
+    }
+};
+

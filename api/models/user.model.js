@@ -28,10 +28,9 @@ const userSchema = new mongoose.Schema(
       required: true,
 
     },
-    // contact: {
-    //   type: Number,
-    //   required: false
-    // },
+    contact: {
+      type: Number,
+    },
     username: {
       type: String,
       required: true,
@@ -73,6 +72,11 @@ const userSchema = new mongoose.Schema(
     isAdmin: {
       type: Boolean,
       default: false,
+    },
+    isStaff:{
+      type: Boolean,
+      default: false
+
     },
   },
   { timestamps: true }

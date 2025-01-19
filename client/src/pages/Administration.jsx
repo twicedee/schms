@@ -13,6 +13,9 @@ export default function Administration() {
         </Link>
 
         <SignUpInvite/>
+        <Link to="/users">
+          <Button className="w-full">View Users</Button>
+        </Link>
       </div>
     </div>
   );

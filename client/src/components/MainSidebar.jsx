@@ -41,7 +41,6 @@ export default function MainSidebar({ isVisible, onClose }) {
     >
       <Sidebar
         className="w-56  bg-white dark:bg-gray-800"
-        onClick={(e) => e.stopPropagation()} // Prevent closing sidebar when clicking inside
       >
         <Sidebar.Items>
           <SidebarItemGroup className="flex flex-col gap-2 divide-y divide-gray-200 dark:divide-gray-700">
@@ -55,7 +54,7 @@ export default function MainSidebar({ isVisible, onClose }) {
               >
                 <div className="font-medium dark:text-white">
                   <div>
-                    {currentUser.firstName} {currentUser.lastName}
+                  {currentUser.initials}{currentUser.firstName} {currentUser.lastName}
                   </div>
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     {currentUser.username}
@@ -90,11 +89,11 @@ export default function MainSidebar({ isVisible, onClose }) {
                 Finance
               </SidebarItem>
             </Link>
-            <Link to="/administration">
+            {currentUser.isAdmin && (<Link to="/administration">
               <SidebarItem icon={MdAdminPanelSettings} as="div">
                 Administration
               </SidebarItem>
-            </Link>
+            </Link>)}
             <Link to="/profile">
               <SidebarItem icon={FaUserCircle} as="div">
                 My Profile

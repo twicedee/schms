@@ -22,7 +22,7 @@ export default function Header({ onToggleSidebar }) {
           <Avatar alt="user" img={currentUser.profilePicture} rounded className="hidden md:inline-flex lg:inline-flex">
             <div className="font-medium dark:text-white">
               <div>
-                {currentUser.firstName} {currentUser.lastName}
+              {currentUser.initials}{currentUser.firstName} {currentUser.lastName}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
                 {currentUser.username}

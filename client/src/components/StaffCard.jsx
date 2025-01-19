@@ -7,7 +7,7 @@ export default function TeacherCard({Staff}) {
     
   return (
     <>
-      <div className="m-3 max-w-full w-full grid grid-cols-1 md:grid-cols-3 border rounded-xl border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800">
+      <div className="m-3 max-w-full w-full grid grid-cols-1 sm:grid-cols-3 border rounded-xl border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800">
         {/* Avatar section */}
         <div className="flex justify-center items-center p-2 md:col-span-1 flex-shrink-1">
           <Avatar size="xl" className="" />

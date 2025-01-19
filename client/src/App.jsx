@@ -8,7 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import StudentRegistration from "./pages/StudentRegistration";
 import Staff from "./pages/Staff.jsx";
 import NonTeachingStaff from "./pages/NonTeachingStaff.jsx";
-import CoCurricular from "./pages/CoCurricular.jsx";
+import Users from "./pages/Users.jsx";
 import Academics from "./pages/Academics.jsx";
 import Students from "./pages/Students.jsx";
 import MainSidebar from "./components/MainSidebar.jsx";
@@ -49,7 +49,7 @@ export default function App() {
               element={
                 <div className="flex flex-row p-2">
                   <MainSidebar />
-                  <div className="flex-1">
+                  <div className="flex-1 overflow-auto">
                     <Routes>
                       <Route path="/" element={<Home />} />
                       <Route path="/dashboard" element={<Dashboard />} />
@@ -62,7 +62,7 @@ export default function App() {
                         path="/non-teaching-staff"
                         element={<NonTeachingStaff />}
                       />
-                      <Route path="/co-curricular" element={<CoCurricular />} />
+                      <Route path="/users" element={<Users />} />
                       <Route path="/academics" element={<Academics />} />
                       <Route path="/students" element={<Students />} />
                       <Route path="/department" element={<Department />} />

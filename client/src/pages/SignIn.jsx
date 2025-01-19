@@ -46,14 +46,11 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen m-20">
+    <div className="min-h-screen mx-10">
       <div className="flex p-3 max-w-full m-auto flex-col md:flex-row align-baseline gap-5">
         {/* left */}
-        <div className="text-center flex flex-col justify-start m-10 pb-5">
-          <div>
-            <img src="/mashimoni.png" />
-          </div>
-
+        <div className="text-center flex flex-col justify-start my-2 px-5">
+            <img src="/mashimoni.png" className="flex m-auto"/>
           <p className="font-bold text-2xl">Mashimoni Moyo Academy</p>
           <h1 className="text-sm mt-5">
             <span className="font-bold">Motto:</span> Learn Today Lead Tomorrow
@@ -61,7 +58,7 @@ export default function SignIn() {
         </div>
         {/* right */}
 
-        <div className="flex-1 my-auto">
+        <div className="flex-1 my-auto mx-10">
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div>
               <Label value="Your email" />
