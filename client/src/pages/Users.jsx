@@ -9,8 +9,12 @@ export default function Users() {
   const [users, setUsers] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const [userToUpdate, setUserToUpdate] = useState(null);
   const [statusToChange, setStatusToChange] = useState("");
+  const [userIdToDelete, setUserIdToDelete] = useState("");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -52,6 +56,7 @@ export default function Users() {
     if (!userToUpdate || !statusToChange) return;
 
     try {
+      setLoading(true);
       const res = await fetch(`/api/user/${userToUpdate._id}/status`, {
         method: "PATCH",
         headers: {
@@ -63,6 +68,7 @@ export default function Users() {
       });
       const data = await res.json();
       if (res.ok) {
+        setLoading(false);
         setUsers((prev) =>
           prev.map((user) =>
             user._id === userToUpdate._id
@@ -72,9 +78,36 @@ export default function Users() {
         );
         setShowModal(false);
       } else {
+        setLoading(false);
+        console.log(data.message);
+        setError(data.message);
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log(error.message);
+      setError(error.message);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/user/delete/${userIdToDelete}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setLoading(false);
+        setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
+        setShowModal(false);
+      } else {
+        setLoading(false);
+        setError(data.message);
         console.log(data.message);
       }
     } catch (error) {
+      setLoading(false);
+      setError(error.message);
       console.log(error.message);
     }
   };
@@ -155,7 +188,7 @@ export default function Users() {
                       <span
                         onClick={() => {
                           setShowModal(true);
-                          setUserToUpdate(user);
+                          setUserIdToDelete(user._id);
                         }}
                         className="font-medium text-red-500 hover:underline cursor-pointer"
                       >
@@ -198,9 +231,17 @@ export default function Users() {
                   : "Are you sure you want to delete this user?"}
               </h3>
               <div className="flex justify-center gap-4">
-                <Button color="failure" onClick={handleStatusChange}>
-                  Yes, I'm sure
-                </Button>
+                {statusToChange ? (
+                  // Status change confirmation
+                  <Button color="failure" onClick={handleStatusChange}>
+                    Yes, I'm sure
+                  </Button>
+                ) : (
+                  // User delete confirmation
+                  <Button color="failure" onClick={handleDeleteUser}>
+                    Yes, I'm sure
+                  </Button>
+                )}
                 <Button color="gray" onClick={() => setShowModal(false)}>
                   No, cancel
                 </Button>

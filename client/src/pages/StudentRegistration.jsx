@@ -1,11 +1,12 @@
 import React from "react";
 import { useState } from "react";
-import { TextInput, Alert, Button, Spinner} from "flowbite-react";
+import { TextInput, Alert, Button, Spinner, Select} from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 
 export default function StudentRegistration() {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(null);
+  const[loading, setLoading] = useState(false)
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -30,6 +31,7 @@ export default function StudentRegistration() {
     }
 
     try {
+      setLoading(true)
       const res = await fetch("/api/student/admit-student", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -38,14 +40,17 @@ export default function StudentRegistration() {
 
       const data = await res.json();
       if (data.success === false) {
+        setLoading(false)
         setError(data.message);
       }
 
       if (res.ok) {
+        setLoading(false)
         setError(null);
         navigate(`/student/${data.admNumber}`);
       }
     } catch (error) {
+      setLoading(false)
       setError(error);
     }
   };
@@ -80,18 +85,20 @@ export default function StudentRegistration() {
             placeholder="Last Name"
             onChange={handleChange}
           />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <TextInput
             type="text"
             id="middleName"
             placeholder="Middle Name"
             onChange={handleChange}
           />
-          <TextInput type="date" id="DOB" onChange={handleChange} />
+        </div>
 
-          <select
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <TextInput type="date" id="DOB" onChange={handleChange} />
+
+          
+         
+          <Select
             id="gender"
             onChange={handleChange}
             className="input"
@@ -100,8 +107,8 @@ export default function StudentRegistration() {
             <option value="">Select Gender</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
-          </select>
-          <select
+          </Select>
+          <Select
             id="level"
             //value={formData.level}
             onChange={handleChange}
@@ -112,8 +119,8 @@ export default function StudentRegistration() {
             <option value="Middle School">Middle School</option>
             <option value="Junior High School">Junior High School</option>
             <option value="Senior High School">Senior High School</option>
-          </select>
-          <select
+          </Select>
+          <Select
             id="grade"
             //value={formData.grade}
             onChange={handleChange}
@@ -132,12 +139,24 @@ export default function StudentRegistration() {
             <option value="grade 10">Grade 10</option>
             <option value="grade 11">Grade 11</option>
             <option value="grade 12">Grade 12</option>
-          </select>
+          </Select>
         </div>
 
-        <Button gradientDuoTone="purpleToPink" type="submit">
-          Admit Student
-        </Button>
+        <Button
+              gradientDuoTone="cyanToBlue"
+              type="submit"
+              disabled={loading}
+              className="w-full "
+            >
+              {loading ? (
+                <>
+                  <Spinner size="sm" />
+                  <span className="p-3">Admitting...</span>
+                </>
+              ) : (
+                "Admit Student"
+              )}
+            </Button>
         {error && (
           <Alert className="mt-5" color="failure">
             {error}
