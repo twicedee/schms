@@ -16,6 +16,9 @@ export default function Administration() {
         <Link to="/users">
           <Button className="w-full">View Users</Button>
         </Link>
+        <Link to="/">
+          <Button className="w-full">Set Important Dates</Button>
+        </Link>
       </div>
     </div>
   );
