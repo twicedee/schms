@@ -106,7 +106,7 @@ export default function StudentFinance() {
           <div className="mt-2 text-gray-600">
             <p>
               <span className="font-semibold">
-                Enrollment Date:{" "}
+                Enrollment Date:
                 {new Date(student && student.createdAt).toLocaleDateString()}
               </span>
             </p>

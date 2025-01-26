@@ -77,8 +77,8 @@ export default function StudentPage() {
     );
 
   return (
-    <div className=" mx-auto  border rounded-xl border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800">
-      <div className="p-3 m-10 grid grid-cols-1 md:grid-cols-3">
+    <div className="p-3 m-10 border rounded-xl border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800">
+      <div className=" grid grid-cols-1 md:grid-cols-3">
         <div className="flex justify-center items-center p-2 md:col-span-1 flex-shrink-1">
           <Avatar size="xl" className="" />
         </div>
