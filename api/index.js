@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.route.js'
 import studentRoutes from './routes/student.route.js'
 import userRoutes from './routes/user.route.js'
 import feeRoutes from './routes/fees.route.js'
+import eventRoutes from './routes/events.route.js'
 import path from 'path';
 
 dotenv.config()
@@ -30,6 +31,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/student', studentRoutes)
 app.use('/api/fee', feeRoutes)
+app.use('/api/events', eventRoutes)
 
 app.use(express.static(path.join(__dirname, '/client/dist')));
 

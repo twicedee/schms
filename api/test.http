@@ -1,5 +1,12 @@
 
 
 
-GET http://localhost:3000/api/student/get-students
+POST http://localhost:3000/api/events/set-term-dates
+Content-Type: application/json
+
+{
+    term: Term 3,
+    startDate: 
+
+}
 

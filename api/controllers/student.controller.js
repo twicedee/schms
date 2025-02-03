@@ -29,9 +29,7 @@ export const admitStudent = async (req, res, next) => {
     ) {
         return next(errorHandler(400, 'Please provide all required fields for the student.'));
     }
-    if (!req.body) {
-        return next(errorHandler(400, 'Please provide all required fields'));
-    }
+    
 
 
 
