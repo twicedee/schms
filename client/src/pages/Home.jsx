@@ -25,7 +25,7 @@ export default function Home() {
       <div className="flex h-56  m-3 p-2">
         <div className="flex-col justify-center m-auto font-serif">
           <p className="text-6xl justify-center font-bold">Mission:</p>
-          <p className="text-4xl pt-4 font-thin">Empowering Tomorrow Leaders</p>
+          <p className="text-4xl pt-4 font-thin">Empowering Tomorrow's Leaders</p>
         </div>
       </div>
     </div>

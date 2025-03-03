@@ -20,7 +20,7 @@ export const admitStudent = async (req, res, next) => {
     if (
         !admNumber ||
         !firstName ||
-        !middleName ||
+        //!middleName ||
         !lastName ||
         !DOB ||
         !gender ||

@@ -1,16 +1,48 @@
 import React from "react";
 import { useState } from "react";
-import { TextInput, Alert, Button, Spinner, Select} from "flowbite-react";
+import {
+  TextInput,
+  Alert,
+  Button,
+  Spinner,
+  Select,
+  Label,
+} from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 
 export default function StudentRegistration() {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(null);
-  const[loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
+    const { id, value } = e.target;
+
+    // Update formData with the new value
+    const updatedFormData = { ...formData, [id]: value.trim() };
+
+    // If the grade is changed, update the level accordingly
+    if (id === "grade") {
+      const grade = parseInt(value.split(" ")[1]); // Extract the grade number
+      let level = "";
+
+      if (grade >= 1 && grade <= 3) {
+        level = "Lower School";
+      } else if (grade >= 4 && grade <= 6) {
+        level = "Middle School";
+      } else if (grade >= 7 && grade <= 9) {
+        level = "Junior High School";
+      } else if (grade >= 10 && grade <= 12) {
+        level = "Senior High School";
+      } else {
+        level = "Pre-Primary";
+      }
+
+      updatedFormData.level = level;
+    }
+
+    setFormData(updatedFormData);
   };
 
   const handleSubmit = async (e) => {
@@ -19,7 +51,7 @@ export default function StudentRegistration() {
     if (
       !formData.admNumber ||
       !formData.firstName ||
-      !formData.middleName ||
+      //!formData.middleName ||
       !formData.lastName ||
       !formData.DOB ||
       !formData.gender ||
@@ -31,7 +63,7 @@ export default function StudentRegistration() {
     }
 
     try {
-      setLoading(true)
+      setLoading(true);
       const res = await fetch("/api/student/admit-student", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -40,17 +72,17 @@ export default function StudentRegistration() {
 
       const data = await res.json();
       if (data.success === false) {
-        setLoading(false)
+        setLoading(false);
         setError(data.message);
       }
 
       if (res.ok) {
-        setLoading(false)
+        setLoading(false);
         setError(null);
-        navigate(`/student/${data.admNumber}`);
+        navigate(`/student-finance/${data.admNumber}`);
       }
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       setError(error);
     }
   };
@@ -66,7 +98,10 @@ export default function StudentRegistration() {
         </h1>
 
         {/* Student Personal Information */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="mt-2 border-b-4 border-black">
+          <Label>Personal Information </Label>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
           <TextInput
             type="number"
             id="admNumber"
@@ -76,7 +111,7 @@ export default function StudentRegistration() {
           <TextInput
             type="text"
             id="firstName"
-            placeholder="first Name"
+            placeholder="First Name"
             onChange={handleChange}
           />
           <TextInput
@@ -91,13 +126,8 @@ export default function StudentRegistration() {
             placeholder="Middle Name"
             onChange={handleChange}
           />
-        </div>
+          <TextInput type="date" id="DOB" onChange={handleChange} />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <TextInput type="date" id="DOB" onChange={handleChange} />
-
-          
-         
           <Select
             id="gender"
             onChange={handleChange}
@@ -108,13 +138,39 @@ export default function StudentRegistration() {
             <option value="Male">Male</option>
             <option value="Female">Female</option>
           </Select>
+        </div>
+        <div className="mt-2 border-b-4 border-black">
+          <Label>Contact Information </Label>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <TextInput
+            type="text"
+            id="parent"
+            placeholder="Parent/Guardian"
+            onChange={handleChange}
+          />
+          <TextInput
+            type="phone"
+            id="contact"
+            placeholder="Parent/Guardian"
+            onChange={handleChange}
+          />
+        </div>
+        <div className="mt-2 border-b-4 border-black">
+          <Label>Academic Information </Label>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Select
             id="level"
-            //value={formData.level}
+            value={formData.level || ""}
             onChange={handleChange}
             className="input"
+            disabled
           >
             <option value="">Select Level</option>
+            <option value="Pre-Primary">Pre-Primary</option>
             <option value="Lower School">Lower School</option>
             <option value="Middle School">Middle School</option>
             <option value="Junior High School">Junior High School</option>
@@ -122,11 +178,14 @@ export default function StudentRegistration() {
           </Select>
           <Select
             id="grade"
-            //value={formData.grade}
+            value={formData.grade || ""}
             onChange={handleChange}
             className="input"
           >
             <option value="">Select Grade</option>
+            <option value="Play Group">Play Group</option>
+            <option value="PP1">PP2</option>
+            <option value="PP2">PP1</option>
             <option value="grade 1">Grade 1</option>
             <option value="grade 2">Grade 2</option>
             <option value="grade 3">Grade 3</option>
@@ -143,20 +202,20 @@ export default function StudentRegistration() {
         </div>
 
         <Button
-              gradientDuoTone="cyanToBlue"
-              type="submit"
-              disabled={loading}
-              className="w-full "
-            >
-              {loading ? (
-                <>
-                  <Spinner size="sm" />
-                  <span className="p-3">Admitting...</span>
-                </>
-              ) : (
-                "Admit Student"
-              )}
-            </Button>
+          gradientDuoTone="cyanToBlue"
+          type="submit"
+          disabled={loading}
+          className="w-full"
+        >
+          {loading ? (
+            <>
+              <Spinner size="sm" />
+              <span className="p-3">Admitting...</span>
+            </>
+          ) : (
+            "Admit Student"
+          )}
+        </Button>
         {error && (
           <Alert className="mt-5" color="failure">
             {error}

@@ -16,7 +16,7 @@ const studentSchema = new mongoose.Schema(
 
         middleName: {
             type: String,
-            required: true,
+            
         },
         lastName: {
             type: String,
@@ -40,7 +40,7 @@ const studentSchema = new mongoose.Schema(
 
         level: {
             type: String,
-            enum: ["Lower School", "Middle School", "Junior High School", "Senior High School"],
+            enum: ["Pre-Primary", "Lower School", "Middle School", "Junior High School", "Senior High School"],
             required: true,
 
         },
@@ -48,6 +48,7 @@ const studentSchema = new mongoose.Schema(
         grade: {
             type: String,
             required: true,
+            enum: ["Play Group", "PP1", "PP2", "grade 1", "grade 2", "grade 3", "grade 4", "grade 5", "grade 6", "grade 7", "grade 8", "grade 9", "grade 10", "grade 12", "grade 12"]
         },
 
         DOB: {
@@ -57,6 +58,9 @@ const studentSchema = new mongoose.Schema(
 
         parent: {
             type: String,
+        },
+        contact: {
+            type: Number,
         },
 
         feeBalance: {
