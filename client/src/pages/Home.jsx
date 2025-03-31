@@ -3,14 +3,14 @@ import { Carousel } from "flowbite-react";
 
 export default function Home() {
   return (
-    <div className="m-5 flex-col gap-4">
-      <div className="flex flex-auto flex-row mx-auto h-32 ">
-        <div>
-          <img className="h-28 w-28" src="MCCPLOGO.png" />
+    <div className="m-5 flex-col">
+      <div className="flex justify-self-auto m-auto h-auto ">
+        <div className="ml-20 justify-start">
+          <img className="max-h-28 max-w-28" src="MCCPLOGO.png" />
         </div>
-        <div className="flex-col justify-center m-auto font-serif">
-          <p className="text-4xl font-extrabold">Mashimoni Moyo</p>
-          <p className="text-2xl  italic">Learn Today Lead Tomorrow</p>
+        <div className="flex-col justify-center font-serif m-auto">
+          <p className="text-xl md:text-4xl font-extrabold">Mashimoni Moyo</p>
+          <p className="md:text-2xl italic">Learn Today Lead Tomorrow</p>
         </div>
       </div>
 

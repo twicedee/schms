@@ -1,14 +1,15 @@
 import Student from "../models/student.model.js";
 import { errorHandler } from '../utils/error.js';
 
-
 export const admitStudent = async (req, res, next) => {
+    // Check if the user is an admin
     if (!req.user.isAdmin) {
         return next(errorHandler(403, 'You are not allowed to admit a student!'));
     }
 
+    // Destructure required fields from the request body
     const {
-        admNumber,
+        enrollmentDate,
         firstName,
         middleName,
         lastName,
@@ -16,11 +17,15 @@ export const admitStudent = async (req, res, next) => {
         gender,
         grade,
         level,
+        parent,
+        contact,
+        feeBalance
     } = req.body;
+
+    // Validate required fields
     if (
-        !admNumber ||
+        !enrollmentDate||
         !firstName ||
-        //!middleName ||
         !lastName ||
         !DOB ||
         !gender ||
@@ -29,19 +34,30 @@ export const admitStudent = async (req, res, next) => {
     ) {
         return next(errorHandler(400, 'Please provide all required fields for the student.'));
     }
-    
 
+    // Create a new student object (excluding admNumber)
+    const newStudent = new Student({
+        enrollmentDate,
+        firstName,
+        middleName,
+        lastName,
+        DOB,
+        gender,
+        grade,
+        level,
+        parent,
+        contact,
+        feeBalance
+    });
 
-
-    const newStudent = new Student(req.body)
     try {
-        const savedStudent = await newStudent.save()
-        return res.status(200).json(savedStudent)
+        // Save the student (pre-save middleware will auto-generate admNumber)
+        const savedStudent = await newStudent.save();
+        return res.status(200).json(savedStudent);
+    } catch (error) {
+        next(error);
     }
-    catch (error) {
-        next(error)
-    }
-}
+};
 
 export const getStudents = async (req, res, next) => {
     try {
@@ -86,31 +102,38 @@ export const getStudents = async (req, res, next) => {
 
 
 export const updateStudent = async (req, res, next) => {
-    if (!req.user.isAdmin ) {
-        return next(errorHandler(403, 'You are not allowed to update this post'));
+    if (!req.user.isAdmin) {
+        return next(errorHandler(403, 'You are not allowed to update this student'));
     }
+    
     try {
-        const updatedStudent = await Student.findByIdAndUpdate(
-            req.params.admNumber,
+        const updatedStudent = await Student.findOneAndUpdate(
+            { admNumber: req.params.admNumber },  // Find by admission number
             {
                 $set: {
-                    firstName: req.query.firstName,
-                    lastName: req.query.lastName,
-                    middleName: req.query.middleName,
-                    gender: req.query.gender,
-                    level: req.query.level,
-                    grade: req.query.grade,
-                    feeBalance: req.query.feeBalance
+                    enrollmentDate: req.body.enrollmentDate,
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
+                    middleName: req.body.middleName,
+                    gender: req.body.gender,
+                    level: req.body.level,
+                    grade: req.body.grade,
+                    feeBalance: req.body.feeBalance,
+                    // Add other fields as needed
                 },
             },
-            { new: true }
+            { new: true }  // Return the updated document
         );
+
+        if (!updatedStudent) {
+            return next(errorHandler(404, 'Student not found'));
+        }
+
         res.status(200).json(updatedStudent);
     } catch (error) {
         next(error);
     }
-
-}
+};
 
 
 export const deleteStudent = async (req, res, next) => {

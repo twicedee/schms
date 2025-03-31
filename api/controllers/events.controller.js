@@ -1,79 +1,65 @@
-import TermDates from "../models/termDates.model.js";
-import eventDates from "../models/events.model.js"
+import eventDates from "../models/events.model.js";
 import { errorHandler } from "../utils/error.js";
 
-export const setTermDates = async (req, res, next) => {
-  if (!req.user.isAdmin) {
-    return next(errorHandler(403, "Unauthorized action" ));
-  }
-
-  const { term, startDate, endDate } = req.body;
-
-  if (!term || !startDate || !endDate) {
-    return next(errorHandler(403,"Please provide term, startDate, and endDate." ));
-  }
-
-  try {
-    const existingTerm = await TermDates.findOne({ term });
-    if (existingTerm) {
-      existingTerm.startDate = startDate;
-      existingTerm.endDate = endDate;
-      await existingTerm.save();
-    } else {
-      const term = new TermDates({ term, startDate, endDate });
-      const newTerm = await newTerm.save();
-    }
-
-    res.status(200).json(newTerm);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getTermDates = async (req, res, next) => {
-  try {
-    const terms = await TermDates.find();
-    res.status(200).json(terms);
-  } catch (error) {
-    next(error);
-  }
-};
-
-
+// Create or update event dates
 export const setEventDates = async (req, res, next) => {
+  // Check if the user is an admin
   if (!req.user.isAdmin) {
-    return res.status(403).json({ message: "Unauthorized action" });
+    return next(errorHandler(403, "Unauthorized action"));
   }
 
-  const { event, date, description } = req.body;
+  const { event, date, description, term, startDate, endDate } = req.body;
 
-  if (!event || !date || !description ) {
-    return next(errorHandler(403,"Please provide term, startDate, and endDate." ));
+  // Validate required fields based on the event type
+  if (event === "important") {
+    if (!date || !description ) {
+      return next(
+        errorHandler(400, "Please provide date, description, and year for important dates.")
+      );
+    }
+  } else if (event === "term") {
+    if (!term || !startDate || !endDate) {
+      return next(
+        errorHandler(400, "Please provide term, startDate, and endDate for term dates.")
+      );
+    }
+  } else {
+    return next(errorHandler(400, "Invalid event type."));
   }
 
   try {
-    const existingTerm = await TermDates.findOne({ term });
-    if (existingTerm) {
-      existingTerm.startDate = startDate;
-      existingTerm.endDate = endDate;
-      await existingTerm.save();
-    } else {
-      const newTerm = new eventDates({ term, startDate, endDate });
-      await newTerm.save();
+    let newEvent;
+
+    if (event === "important") {
+      // Create or update important date
+      newEvent = new eventDates({
+        event,
+        date,
+        description,
+      });
+    } else if (event === "term") {
+      // Create or update term date
+      newEvent = new eventDates({
+        event,
+        term,
+        startDate,
+        endDate,
+      });
     }
 
-    res.status(200).json({ message: "Term dates set successfully." });
+    await newEvent.save();
+    res.status(200).json({ message: "Event date saved successfully.", newEvent });
   } catch (error) {
     next(error);
   }
 };
 
+// Fetch all event dates
 export const getEventDates = async (req, res, next) => {
   try {
-    const terms = await TermDates.find();
-    res.status(200).json(terms);
+    const events = await eventDates.find();
+    res.status(200).json(events);
   } catch (error) {
     next(error);
   }
 };
-

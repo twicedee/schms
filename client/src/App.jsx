@@ -24,6 +24,7 @@ import StudentsFinance from "./pages/StudentsFinance.jsx";
 import CreateFeeStructure from "./pages/CreateFeeStructure.jsx";
 import ViewFeeStructure from "./pages/ViewFeeStructure.jsx";
 import FeeStructure from "./pages/FeeStructure.jsx";
+import UpdateStudent from "./components/UpdateStudent.jsx";
 
 export default function App() {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
@@ -77,6 +78,10 @@ export default function App() {
                       <Route
                         path="/student/:studentId"
                         element={<StudentPage />}
+                      />
+                      <Route
+                        path="/update-student/:studentId"
+                        element={<UpdateStudent />}
                       />
                       <Route path="/finance" element={<Finance />} />
                       <Route

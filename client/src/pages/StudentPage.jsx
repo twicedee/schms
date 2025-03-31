@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { useSelector } from 'react-redux';
+import UpdateStudent from "../components/UpdateStudent";
 
 
 
@@ -113,7 +114,7 @@ export default function StudentPage() {
           <div className="mt-2 text-gray-600">
             <p>
               <span className="font-semibold">Enrollment Date:</span>{" "}
-              {new Date(student && student.createdAt).toLocaleDateString()}
+              {new Date(student && student.enrollmentDate).toLocaleDateString()}
             </p>
             <p>
               <span className="font-semibold">Grade: </span>
@@ -121,7 +122,7 @@ export default function StudentPage() {
             </p>
             <p>
               <span className="font-semibold">Level: </span>
-              {student.level}{" "}
+              {student && student.level}{" "}
             </p>
           </div>
         </div>
@@ -138,9 +139,13 @@ export default function StudentPage() {
         >
           Delete
         </Button>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg focus:outline-none">
-          Edit
+        <Link to={`/update-student/${student.admNumber}`}>
+        <Button className="bg-green-500 hover:bg-greens-700 text-white px-4 py-2 rounded-lg focus:outline-none ">Update
+
         </Button>
+        </Link>
+        
+      
       </div>
       <Modal
         show={showModal}

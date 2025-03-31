@@ -2,6 +2,10 @@ import { TextInput, Alert, Avatar, Button, Label } from "flowbite-react";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+
+
+
+
 export default function StudentFinance() {
   const { studentId } = useParams();
   const navigate = useNavigate();

@@ -6,7 +6,7 @@ export default function UpdateFees() {
 
     const handleUpdateFees = async () => {
         try {
-          const response = await fetch("/api/fee/update-fees", {
+          const response = await fetch("/api/fee/update-student-fees", {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",

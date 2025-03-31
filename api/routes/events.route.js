@@ -1,15 +1,13 @@
-import express from 'express';
-
-import { setTermDates, setEventDates, getEventDates, getTermDates } from "../controllers/events.controller.js";
-import { verifyToken } from '../utils/VerifyUser.js';
-
+import express from "express";
+import {
+    setEventDates,
+    getEventDates,
+} from "../controllers/events.controller.js";
+import { verifyToken } from "../utils/verifyUser.js";
 
 const router = express.Router();
 
-router.post("/set-term-dates" ,setTermDates)
-router.post("/set-event-date" ,setTermDates, verifyToken)
-router.get("/get-term-dates", getTermDates)
-router.get("/get-event-dates", getEventDates)
+router.post("/set-event-dates", verifyToken, setEventDates);
+router.get("/get-event-dates", getEventDates);
 
-
-export default router
+export default router;

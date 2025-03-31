@@ -42,13 +42,16 @@ export default function StudentsFinance() {
         <div className=" flex-col">
           <Table>
             <Table.Head>
-            <Table.HeadCell>AdmNo</Table.HeadCell>
+              <Table.HeadCell>AdmNo</Table.HeadCell>
 
               <Table.HeadCell>Student Name</Table.HeadCell>
               <Table.HeadCell>Level</Table.HeadCell>
               <Table.HeadCell>Term 1</Table.HeadCell>
               <Table.HeadCell>Term 2</Table.HeadCell>
               <Table.HeadCell>Term 3</Table.HeadCell>
+              <Table.HeadCell>
+                <span className="sr-only">View</span>
+              </Table.HeadCell>
             </Table.Head>
             <Table.Body>
               {students.map((student) => (
@@ -65,6 +68,14 @@ export default function StudentsFinance() {
                         : "-"}
                     </Table.Cell>
                   ))}
+                  <Table.Cell>
+                    <Link
+                      to={`/student-finance/${student.admNumber}`}
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      View
+                    </Link>
+                  </Table.Cell>
                 </Table.Row>
               ))}
             </Table.Body>

@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.mashimonimoyo-bg {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><text x="0" y="30" font-family="Arial" font-size="20" fill="black">MASHIMONI</text><text x="100" y="30" font-family="Arial" font-size="20" fill="red">MOYO</text></svg>');
+    background-repeat: repeat;
+    background-size: 200px 50px;
+  }

@@ -10,6 +10,10 @@ import {
 } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 
+//Create admission number
+//finish paying fee function
+//add other fields to admission page
+
 export default function StudentRegistration() {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(null);
@@ -49,7 +53,7 @@ export default function StudentRegistration() {
     e.preventDefault();
 
     if (
-      !formData.admNumber ||
+      !formData.enrollmentDate ||
       !formData.firstName ||
       //!formData.middleName ||
       !formData.lastName ||
@@ -103,10 +107,11 @@ export default function StudentRegistration() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
           <TextInput
-            type="number"
-            id="admNumber"
+            type="date"
+            id="enrollmentDate"
             placeholder="Admission Number"
             onChange={handleChange}
+            
           />
           <TextInput
             type="text"
@@ -184,20 +189,20 @@ export default function StudentRegistration() {
           >
             <option value="">Select Grade</option>
             <option value="Play Group">Play Group</option>
-            <option value="PP1">PP2</option>
-            <option value="PP2">PP1</option>
-            <option value="grade 1">Grade 1</option>
-            <option value="grade 2">Grade 2</option>
-            <option value="grade 3">Grade 3</option>
-            <option value="grade 4">Grade 4</option>
-            <option value="grade 5">Grade 5</option>
-            <option value="grade 6">Grade 6</option>
-            <option value="grade 7">Grade 7</option>
-            <option value="grade 8">Grade 8</option>
-            <option value="grade 9">Grade 9</option>
-            <option value="grade 10">Grade 10</option>
-            <option value="grade 11">Grade 11</option>
-            <option value="grade 12">Grade 12</option>
+            <option value="PP1">PP1</option>
+            <option value="PP2">PP2</option>
+            <option value="Grade 1">Grade 1</option>
+            <option value="Grade 2">Grade 2</option>
+            <option value="Grade 3">Grade 3</option>
+            <option value="Grade 4">Grade 4</option>
+            <option value="Grade 5">Grade 5</option>
+            <option value="Grade 6">Grade 6</option>
+            <option value="Grade 7">Grade 7</option>
+            <option value="Grade 8">Grade 8</option>
+            <option value="Grade 9">Grade 9</option>
+            <option value="Grade 10">Grade 10</option>
+            <option value="Grade 11">Grade 11</option>
+            <option value="Grade 12">Grade 12</option>
           </Select>
         </div>
 
