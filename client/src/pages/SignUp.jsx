@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 
 export default function SignUp() {
-  const [searchParams] = useSearchParams()
+  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -55,7 +55,6 @@ export default function SignUp() {
     } catch (error) {
       setErrorMessage(error.message);
       setLoading(false);
-
     }
   };
   return (
@@ -63,7 +62,7 @@ export default function SignUp() {
       <div className="flex p-3 max-w-full m-auto flex-col md:flex-row align-baseline gap-5">
         {/* left */}
         <div className="text-center flex flex-col justify-start my-2 px-5">
-            <img src="/mashimoni.png" className="flex m-auto"/>
+          <img src="/mashimoni.png" className="flex m-auto" />
           <p className="font-bold text-2xl">Mashimoni Moyo Academy</p>
           <h1 className="text-sm mt-5">
             <span className="font-bold">Motto:</span> Learn Today Lead Tomorrow
@@ -72,15 +71,24 @@ export default function SignUp() {
         {/* right */}
 
         <div className="flex-1 w-full my-auto">
-          <form className="grid grid-cols-1 lg:grid-cols-2  gap-4" onSubmit={handleSubmit}>
+          <form
+            className="grid grid-cols-1 lg:grid-cols-2  gap-4"
+            onSubmit={handleSubmit}
+          >
             <div>
               <Label value="Your Initials" />
-              <TextInput
-                type="text"
-                placeholder="Mr., Mrs., Dr., Miss., Dr."
+              <Select
                 id="initials"
+                value = ""
                 onChange={handleChange}
-              />
+                className="input"
+                required
+              >
+                <option value="">Select Initials</option>
+                <option value="Mr.">Mr.</option>
+                <option value="Mrs.">Mrs.</option>
+                <option value="Miss.">Miss.</option>
+              </Select>
             </div>
             <div>
               <Label value="Your First Name" />

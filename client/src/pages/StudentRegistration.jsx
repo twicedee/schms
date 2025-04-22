@@ -182,14 +182,14 @@ export default function StudentRegistration() {
             id="parent"
             placeholder="Parent/Guardian"
             onChange={handleChange}
-            required
+            
           />
           <TextInput
             type="tel"
             id="contact"
             placeholder="Parent/Guardian Phone"
             onChange={handleChange}
-            required
+            
           />
         </div>
 

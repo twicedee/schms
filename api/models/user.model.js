@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema(
     },
     initials: {
       type: String,
-      //enum: ["Mr.", "Mrs.", "Miss.", "Dr."],
+      enum: ["Mr.", "Mrs.", "Miss."],
       required: true,
     },
 

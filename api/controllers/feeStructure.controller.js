@@ -14,7 +14,7 @@ export const createFeeStructure = async (req, res, next) => {
 
     try {
         // Find existing fee structure for the level and term
-        const existingFee = await FeeStructure.findOne({dayBoarding, level, term });
+        const existingFee = await FeeStructure.findOne({dayBoarding, level, term, year});
 
         if (existingFee) {
             // Update the existing fee structure

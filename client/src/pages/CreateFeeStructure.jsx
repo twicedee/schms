@@ -40,7 +40,7 @@ export default function CreateFeeStructure() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    const dayBoardingValue = tab === 0 ? "Boarding" : "Day";
+    const dayBoardingValue = tab === 0 ? "Boarding" : "Day"; //
     setFormData(prev => ({ ...prev, dayBoarding: dayBoardingValue }));
   };
 
@@ -66,61 +66,50 @@ export default function CreateFeeStructure() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
 
-    // Validate and convert data
-    const payload = {
-      dayBoarding: activeTab === 0 ? "Boarding" : "Day",
-      level: formData.level.trim(),
-      year: parseInt(formData.year, 10),
-      term: formData.term.trim(),
-      amount: parseFloat(formData.amount)
-    };
-
-    // Validation
-    if (!payload.level || !payload.term || isNaN(payload.amount)) {
-      setError("Please fill all fields with valid values");
+    if (
+      !formData.level ||
+      !formData.year ||
+      !formData.term ||
+      !formData.amount
+    ) {
+      setError("Please provide level, term, and amount.");
       return;
     }
 
-    if (isNaN(payload.year) || payload.year < 2000 || payload.year > new Date().getFullYear() + 5) {
-      setError("Please enter a valid year between 2000 and " + (new Date().getFullYear() + 5));
-      return;
-    }
-
+    setLoading(true);
     try {
-      setLoading(true);
       const res = await fetch("/api/fee/create-fee-structure", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          ...formData,
+          dayBoarding: activeTab, // Ensure activeTab value is included
+        }),
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to save fee structure");
+      if (!res.ok) {
+        setError(data.message || "Failed to save fee structure.");
+        setLoading(false);
+        return;
+      }
 
-      // Refresh data
+      setError(null);
+      setLoading(false);
+      // Refresh the fee structure after successful submission
       const refreshRes = await fetch("/api/fee/get-fee-structure");
       const refreshData = await refreshRes.json();
-      setFeeStructure(Array.isArray(refreshData) ? refreshData : []);
-
-      // Reset form
-      setFormData(prev => ({
-        ...prev,
-        level: "",
-        term: "",
-        amount: ""
-      }));
-
-      setSuccess(data.message || "Fee structure saved successfully");
+      if (refreshRes.ok && Array.isArray(refreshData)) {
+        setFeeStructure(refreshData);
+      }
     } catch (err) {
-      setError(err.message);
-    } finally {
+      setError("An error occurred while saving the fee structure.");
       setLoading(false);
     }
   };
 
+  
   return (
     <div className="m-20 flex flex-col">
       <div className="mb-4 text-center">
