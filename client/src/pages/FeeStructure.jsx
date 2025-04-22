@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Table } from "flowbite-react";
+import { Table, Tabs, TabItem } from "flowbite-react";
 
 export default function FeeStructure() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [feeStructure, setFeeStructure] = useState([]);
+  const [activeTab, setActiveTab] = useState("Boarding"); // Default to "Boarding"
 
   const levels = [
+    "Pre-Primary",
     "Lower School",
     "Middle School",
     "Junior High School",
@@ -43,38 +45,54 @@ export default function FeeStructure() {
   }, []);
 
   return (
-    <div>
-      {" "}
-      <div className=" p-5 m-8">
-        <div className="mt-2">
-          <h2 className="mb-4 text-xl font-bold">Fee Structure</h2>
-          <Table className="border border-gray-500 rounded-md">
-            <Table.Head>
-              <Table.HeadCell>Level</Table.HeadCell>
-              {terms.map((term) => (
-                <Table.HeadCell key={term}>{term}</Table.HeadCell>
-              ))}
-            </Table.Head>
-            <Table.Body>
-              {levels.map((level) => (
-                <Table.Row key={level}>
-                  <Table.Cell className="font-medium">{level}</Table.Cell>
-                  {terms.map((term) => {
-                    const fee = feeStructure.find(
-                      (item) => item.level === level && item.term === term
-                    );
-                    return (
-                      <Table.Cell key={term}>
-                        {fee ? fee.amount : "-"}
-                      </Table.Cell>
-                    );
-                  })}
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
-        </div>
+    <div className="p-5 m-8">
+      <div className="mb-6">
+        <h2 className="text-xl font-bold mb-4">Fee Structure</h2>
+        
+        {/* Day/Boarding Tabs */}
+        <Tabs 
+          variant="fullWidth" 
+          onActiveTabChange={(tab) => setActiveTab(tab === 0 ? "Boarding" : "Day")}
+        >
+          <TabItem active={activeTab === "Boarding"} title="Boarding" />
+          <TabItem active={activeTab === "Day"} title="Day" />
+        </Tabs>
       </div>
+
+      {/* Fee Structure Table (Filtered by Day/Boarding) */}
+      <div className="mt-4">
+        <Table className="border border-gray-500 rounded-md">
+          <Table.Head>
+            <Table.HeadCell>Level</Table.HeadCell>
+            {terms.map((term) => (
+              <Table.HeadCell key={term}>{term}</Table.HeadCell>
+            ))}
+          </Table.Head>
+          <Table.Body>
+            {levels.map((level) => (
+              <Table.Row key={level}>
+                <Table.Cell className="font-medium">{level}</Table.Cell>
+                {terms.map((term) => {
+                  const fee = feeStructure.find(
+                    (item) => 
+                      item.level === level && 
+                      item.term === term && 
+                      item.dayBoarding === activeTab
+                  );
+                  return (
+                    <Table.Cell key={term}>
+                      {fee ? `KES${fee.amount}` : "-"}
+                    </Table.Cell>
+                  );
+                })}
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      </div>
+
+      {loading && <p className="mt-4">Loading...</p>}
+      {error && <p className="mt-4 text-red-500">{error}</p>}
     </div>
   );
 }

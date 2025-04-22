@@ -8,16 +8,9 @@ export default function Classes() {
         <div className="p-5">
           <Tabs variant="fullWidth">
             <TabItem active title="All Classes"></TabItem>
+            <TabItem title="Pre-School"></TabItem>
             <TabItem title="Lower School">
-              <div className="mb-4 flex items-center justify-between">
-                <h1 className="text-xl font-bold leading-none text-gray-900 dark:text-white">
-                  Classes
-                </h1>
-              </div>
             </TabItem>
-            <TabItem title="Middle School"></TabItem>
-            <TabItem title="Junior High School"></TabItem>
-            <TabItem title="Senior High School"></TabItem>
           </Tabs>
         </div>
       </div>

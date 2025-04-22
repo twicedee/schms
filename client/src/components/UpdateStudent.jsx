@@ -7,16 +7,21 @@ import {
   Spinner,
   Select,
   Label,
-  Modal,
+  Radio,
+  Checkbox,
+  Modal
 } from "flowbite-react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function UpdateStudent() {
-  const [openModal, setOpenModal] = useState(false);
   const { studentId } = useParams();
-  const [student, setStudent] = useState('');
+  const [student, setStudent] = useState(null);
   const [error, setError] = useState(null);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    gender: "Female",
+    dayBoarding: "Day",
+    sponscer: false
+  });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -33,7 +38,11 @@ export default function UpdateStudent() {
         }
         if (res.ok) {
           setStudent(data.students[0]);
-          setFormData(data.students[0]);
+          setFormData({
+            ...data.students[0],
+            DOB: data.students[0].DOB.split('T')[0],
+            enrollmentDate: data.students[0].enrollmentDate.split('T')[0]
+          });
           setLoading(false);
           setError(false);
         }
@@ -46,19 +55,26 @@ export default function UpdateStudent() {
   }, [studentId]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
     
-    if (!formData.enrollmentDate || !formData.firstName || 
-        !formData.lastName || !formData.DOB || 
-        !formData.gender || !formData.grade || !formData.level) {
-      return setError("Please fill in all required details");
+    if (
+      !formData.enrollmentDate ||
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.DOB ||
+      !formData.gender ||
+      !formData.grade ||
+      !formData.level ||
+      !formData.dayBoarding
+    ) {
+      return setError("Please fill in all required fields.");
     }
-    
+
     try {
       setLoading(true);
       const res = await fetch(`/api/student/update-student/${studentId}`, {
@@ -73,7 +89,6 @@ export default function UpdateStudent() {
         return;
       }
       
-      // Success - navigate away or show success message
       navigate(`/student/${studentId}`);
     } catch (error) {
       setError(error.message);
@@ -81,6 +96,14 @@ export default function UpdateStudent() {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Spinner size="xl" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-20">
@@ -103,7 +126,7 @@ export default function UpdateStudent() {
               <TextInput
                 type="date"
                 id="enrollmentDate"
-                value={formData.enrollmentDate ? formData.enrollmentDate.split('T')[0] : ''}
+                value={formData.enrollmentDate || ''}
                 onChange={handleChange}
                 required
               />
@@ -142,33 +165,45 @@ export default function UpdateStudent() {
               <TextInput 
                 type="date" 
                 id="DOB" 
-                value={formData.DOB ? formData.DOB.split('T')[0] : ''} 
+                value={formData.DOB || ''} 
                 onChange={handleChange} 
                 required 
               />
             </div>
-            <div>
-              <Label htmlFor="gender">Gender</Label>
-              <Select
-                id="gender"
-                onChange={handleChange}
-                value={formData.gender || ''}
-                required
-              >
-                <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </Select>
+            <div className="flex flex-col gap-2">
+              <Label>Gender</Label>
+              <div className="flex gap-4">
+                <div className="flex items-center gap-2">
+                  <Radio
+                    id="gender-female"
+                    name="gender"
+                    value="Female"
+                    checked={formData.gender === "Female"}
+                    onChange={() => setFormData({...formData, gender: "Female"})}
+                  />
+                  <Label htmlFor="gender-female">Female</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Radio
+                    id="gender-male"
+                    name="gender"
+                    value="Male"
+                    checked={formData.gender === "Male"}
+                    onChange={() => setFormData({...formData, gender: "Male"})}
+                  />
+                  <Label htmlFor="gender-male">Male</Label>
+                </div>
+              </div>
             </div>
           </div>
 
+          {/* Contact Information */}
           <div className="mt-2 border-b-4 border-black">
             <Label>Contact Information</Label>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="parent">Parent/Guardian Name</Label>
+              <Label htmlFor="parent">Parent/Guardian</Label>
               <TextInput
                 type="text"
                 id="parent"
@@ -187,10 +222,10 @@ export default function UpdateStudent() {
             </div>
           </div>
 
+          {/* Academic Information */}
           <div className="mt-2 border-b-4 border-black">
             <Label>Academic Information</Label>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="level">Level</Label>
@@ -235,23 +270,67 @@ export default function UpdateStudent() {
                 <option value="Grade 12">Grade 12</option>
               </Select>
             </div>
+
+            {/* Sponsor Field */}
+            <div className="flex items-center gap-2">
+              <Checkbox 
+                id="sponscer" 
+                checked={formData.sponscer || false}
+                onChange={(e) => setFormData({...formData, sponscer: e.target.checked})}
+              />
+              <Label htmlFor="sponscer">Sponsored Student?</Label>
+            </div>
+
+            {/* Boarding/Day Field */}
+            <div className="flex flex-col gap-2">
+              <Label>Residence Type:</Label>
+              <div className="flex gap-4">
+                <div className="flex items-center gap-2">
+                  <Radio
+                    id="dayBoarding-day"
+                    name="dayBoarding"
+                    value="Day"
+                    checked={formData.dayBoarding === "Day"}
+                    onChange={() => setFormData({...formData, dayBoarding: "Day"})}
+                  />
+                  <Label htmlFor="dayBoarding-day">Day</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Radio
+                    id="dayBoarding-boarding"
+                    name="dayBoarding"
+                    value="Boarding"
+                    checked={formData.dayBoarding === "Boarding"}
+                    onChange={() => setFormData({...formData, dayBoarding: "Boarding"})}
+                  />
+                  <Label htmlFor="dayBoarding-boarding">Boarding</Label>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <Button
-            gradientDuoTone="cyanToBlue"
-            type="submit"
-            disabled={loading}
-            className="w-full mt-6"
-          >
-            {loading ? (
-              <>
-                <Spinner size="sm" />
-                <span className="pl-3">Updating...</span>
-              </>
-            ) : (
-              "Update Student"
-            )}
-          </Button>
+          <div className="flex justify-end gap-4 mt-6">
+            <Button 
+              color="gray" 
+              onClick={() => navigate(`/student/${studentId}`)}
+            >
+              Cancel
+            </Button>
+            <Button
+              gradientDuoTone="cyanToBlue"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Spinner size="sm" />
+                  <span className="pl-3">Updating...</span>
+                </>
+              ) : (
+                "Update Student"
+              )}
+            </Button>
+          </div>
           
           {error && (
             <Alert className="mt-5" color="failure">

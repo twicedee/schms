@@ -1,40 +1,57 @@
-import { TextInput, Alert, Avatar, Button, Label } from "flowbite-react";
+import { 
+  TextInput, 
+  Alert, 
+  Avatar, 
+  Button, 
+  Label, 
+  Badge, 
+  Table, 
+  Spinner,
+  Select,
+  Modal
+} from "flowbite-react";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
-
-
+import { HiOutlineCash, HiOutlineReceiptTax } from 'react-icons/hi';
+import { useSelector } from "react-redux";
 
 
 export default function StudentFinance() {
+  const { currentUser } = useSelector((state) => state.user);
+
   const { studentId } = useParams();
   const navigate = useNavigate();
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [student, setStudent] = useState(null);
-  const [loading, setLoading] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [formData, setFormData] = useState({
+    amount: '',
+    term: '',
+    receiptNumber: '',
+    year: new Date().getFullYear()
+  });
 
   useEffect(() => {
     const fetchStudent = async () => {
       try {
         setLoading(true);
-        const res = await fetch(
-          `/api/student/get-students?admNumber=${studentId}`
-        );
+        const res = await fetch(`/api/student/get-students?admNumber=${studentId}`);
         const data = await res.json();
-        console.log(data);
         if (!res.ok) {
-          setError(true);
+          setError(data.message || "Failed to fetch student");
           setLoading(false);
           return;
         }
         if (res.ok) {
           setStudent(data.students[0]);
-          console.log(data.students[0]);
           setLoading(false);
           setError(false);
         }
       } catch (error) {
-        setError(true);
+        setError(error.message);
         setLoading(false);
       }
     };
@@ -42,141 +59,284 @@ export default function StudentFinance() {
   }, [studentId]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handlePaymentSubmit = async (e) => {
     e.preventDefault();
+    setPaymentLoading(true);
+    setError(null);
+    
+    if (!formData.amount || !formData.term) {
+      setError("Please fill in all required fields");
+      setPaymentLoading(false);
+      return;
+    }
+
     try {
-      const res = await fetch(
-        `/api/students/update-student?admNumber=${studentId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const res = await fetch(`/api/student/update-student/${studentId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          feePayment: {
+            ...formData,
+            recordedBy: `${currentUser.initials}${currentUser.firstName} ${currentUser.lastName}` // Replace with actual user from your auth system
+          }
+        }),
+      });
       const data = await res.json();
+      
       if (!res.ok) {
-        setError(data.message);
+        setError(data.message || "Payment failed");
         return;
       }
-
-      if (res.ok) {
-        setError(null);
-        navigate(`/student-finance/${data.admNumber}`);
+      
+      setSuccess("Payment recorded successfully!");
+      setFormData({
+        amount: '',
+        term: '',
+        receiptNumber: '',
+        year: new Date().getFullYear()
+      });
+      setShowPaymentModal(false);
+      // Refresh student data
+      const refreshRes = await fetch(`/api/student/get-students?admNumber=${studentId}`);
+      const refreshData = await refreshRes.json();
+      if (refreshRes.ok) {
+        setStudent(refreshData.students[0]);
       }
     } catch (error) {
-      setError("Something went wrong");
+      setError(error.message);
+    } finally {
+      setPaymentLoading(false);
     }
   };
 
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'Paid':
+        return <Badge color="success">{status}</Badge>;
+      case 'Partial':
+        return <Badge color="warning">{status}</Badge>;
+      default:
+        return <Badge color="failure">{status}</Badge>;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Spinner size="xl" />
+      </div>
+    );
+  }
+
   return (
-    <div className="p-3 m-10 items-center border rounded-xl border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800">
-      <div className="grid grid-cols-1 md:grid-cols-3">
-        <div className="flex justify-center items-center p-2 md:col-span-1 flex-shrink-1">
-          <Avatar size="xl" className="" />
-        </div>
+    <div className="p-4 max-w-6xl mx-auto">
+      {/* Header Section */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+          Student Finance
+        </h1>
+        <Button onClick={() => setShowPaymentModal(true)}>
+          <HiOutlineCash className="mr-2 h-5 w-5" />
+          Record Payment
+        </Button>
+      </div>
 
-        {/* Basic Info */}
-        <div className="mb-4 p-3 flex flex-col  gap-2">
-          <h3 className="text-lg font-semibold text-gray-700">
-            Personal Information
-          </h3>
-          <div className="mt-2 text-gray-600">
-            <p>
-              <span className="font-semibold">Name: </span>
-              {student && student.firstName} {student && student.middleName}{" "}
-              {student && student.lastName}
-            </p>
-            <p>
-              <span className="font-semibold">Date of Birth: </span>
-              {new Date(student && student.DOB).toLocaleDateString()}
-            </p>
-            <p>
-              <span className="font-semibold">Gender: </span>{" "}
-              {student && student.gender}
-            </p>
+      {/* Student Info Card */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex-shrink-0">
+            <Avatar
+              img={student?.studentPhoto}
+              size="xl"
+              rounded
+              className="border-2 border-gray-200 dark:border-gray-600"
+            />
           </div>
-        </div>
-
-        {/* Academic Info */}
-        <div className="mb-4 p-3 flex flex-col  gap-2">
-          <h3 className="text-lg font-semibold text-gray-700">
-            Academic Information
-          </h3>
-          <div className="mt-2 text-gray-600">
-            <p>
-              <span className="font-semibold">
-                Enrollment Date:
-                {new Date(student && student.enrollmentDate).toLocaleDateString()}
-              </span>
+          
+          <div className="flex-1">
+            <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+              {student?.firstName} {student?.middleName} {student?.lastName}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
+              Admission #: {student?.admNumber} | {student?.dayBoarding} {student?.sponscer && "(Sponsored)"}
             </p>
-            <p>
-              <span className="font-semibold">Grade: </span>
-              {student && student.grade}
-            </p>
-            <p>
-              <span className="font-semibold">Level: </span>
-              {student && student.level}
-            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Academic</h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  <span className="font-medium">Grade:</span> {student?.grade}
+                </p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  <span className="font-medium">Level:</span> {student?.level}
+                </p>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Contact</h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  <span className="font-medium">Parent:</span> {student?.parent || "Not specified"}
+                </p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  <span className="font-medium">Phone:</span> {student?.contact || "Not specified"}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div className="flex justify-center flex-col w-full">
-        <div className="text-xl m-6 flex justify-center">
-          <p>Fee Statement</p>
-        </div>
-        <div>
-          <form onSubmit={handleSubmit} className="p-4 gap-4">
-            <div className="flex justify-center flex-col md:flex-row gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="disabledInput1">Current Balance</Label>
-                <TextInput
-                  type="text"
-                  id="disabledInput1"
-                  placeholder={student && student.feeBalance}
-                  disabled
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="disabledInput2">Fee paid</Label>
-                <TextInput
-                  type="text"
-                  id="disabledInput2"
-                  placeholder="Disabled readonly input"
-                  disabled
-                  readOnly
-                />
-              </div>
 
-              <div className="flex flex-col gap-2">
-                <Label>Enter fees</Label>
-                <TextInput
-                  type="number"
-                  id="feeBalance"
-                  onChange={handleChange}
-                />
-              </div>
+      {/* Fee Balances */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+        <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
+          Fee Balances
+        </h3>
+        
+        <Table hoverable>
+          <Table.Head>
+            <Table.HeadCell>Term</Table.HeadCell>
+            <Table.HeadCell>Year</Table.HeadCell>
+            <Table.HeadCell>Amount</Table.HeadCell>
+            <Table.HeadCell>Paid</Table.HeadCell>
+            <Table.HeadCell>Balance</Table.HeadCell>
+            <Table.HeadCell>Status</Table.HeadCell>
+          </Table.Head>
+          <Table.Body className="divide-y">
+            {student?.feeBalances?.map((fee, index) => (
+              <Table.Row key={index} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                <Table.Cell>{fee.term}</Table.Cell>
+                <Table.Cell>{fee.year}</Table.Cell>
+                <Table.Cell>KSh {fee.amount?.toLocaleString()}</Table.Cell>
+                <Table.Cell>KSh {fee.paid?.toLocaleString()}</Table.Cell>
+                <Table.Cell>KSh {fee.balance?.toLocaleString()}</Table.Cell>
+                <Table.Cell>{getStatusBadge(fee.status)}</Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      </div>
+
+      {/* Payment History */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
+          Payment History
+        </h3>
+        
+        {student?.feeHistory?.length > 0 ? (
+          <Table hoverable>
+            <Table.Head>
+              <Table.HeadCell>Date</Table.HeadCell>
+              <Table.HeadCell>Amount</Table.HeadCell>
+              <Table.HeadCell>Term</Table.HeadCell>
+              <Table.HeadCell>Year</Table.HeadCell>
+              <Table.HeadCell>Receipt #</Table.HeadCell>
+              <Table.HeadCell>Recorded By</Table.HeadCell>
+            </Table.Head>
+            <Table.Body className="divide-y">
+              {student.feeHistory.map((payment, index) => (
+                <Table.Row key={index} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                  <Table.Cell>{new Date(payment.date).toLocaleDateString()}</Table.Cell>
+                  <Table.Cell>KSh {payment.amount?.toLocaleString()}</Table.Cell>
+                  <Table.Cell>{payment.term}</Table.Cell>
+                  <Table.Cell>{payment.year}</Table.Cell>
+                  <Table.Cell>{payment.receiptNumber}</Table.Cell>
+                  <Table.Cell>{payment.recordedBy}</Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
+        ) : (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            No payment history found
+          </div>
+        )}
+      </div>
+
+      {/* Payment Modal */}
+      <Modal show={showPaymentModal} onClose={() => setShowPaymentModal(false)}>
+        <Modal.Header>Record New Payment</Modal.Header>
+        <Modal.Body>
+          <form onSubmit={handlePaymentSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="amount">Amount (KSh)</Label>
+              <TextInput
+                type="number"
+                id="amount"
+                value={formData.amount}
+                onChange={handleChange}
+                required
+                placeholder="Enter amount"
+              />
             </div>
-
-            <div className="flex justify-end mt-3 mx-50">
-              <Button
-                type="submit"
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 w-full rounded-lg focus:outline-none"
+            
+            <div>
+              <Label htmlFor="term">Term</Label>
+              <Select
+                id="term"
+                value={formData.term}
+                onChange={handleChange}
+                required
               >
-                Update Fee Balance
+                <option value="">Select Term</option>
+                <option value="Term 1">Term 1</option>
+                <option value="Term 2">Term 2</option>
+                <option value="Term 3">Term 3</option>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="year">Year</Label>
+              <TextInput
+                type="number"
+                id="year"
+                value={formData.year}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="receiptNumber">Receipt Number (Optional)</Label>
+              <TextInput
+                type="text"
+                id="receiptNumber"
+                value={formData.receiptNumber}
+                onChange={handleChange}
+                placeholder="Enter receipt number"
+              />
+            </div>
+            
+            <div className="flex justify-end gap-3 pt-4">
+              <Button color="gray" onClick={() => setShowPaymentModal(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={paymentLoading}>
+                {paymentLoading ? (
+                  <>
+                    <Spinner size="sm" />
+                    <span className="pl-3">Processing...</span>
+                  </>
+                ) : (
+                  "Record Payment"
+                )}
               </Button>
             </div>
           </form>
-        </div>
-      </div>
+        </Modal.Body>
+      </Modal>
 
+      {/* Alerts */}
       {error && (
-        <Alert className="mt-5" color="failure">
+        <Alert className="mb-4" color="failure" onDismiss={() => setError(null)}>
           {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert className="mb-4" color="success" onDismiss={() => setSuccess(null)}>
+          {success}
         </Alert>
       )}
     </div>

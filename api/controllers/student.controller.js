@@ -1,13 +1,12 @@
 import Student from "../models/student.model.js";
+import FeeStructure from "../models/feeStructure.model.js";
 import { errorHandler } from '../utils/error.js';
 
 export const admitStudent = async (req, res, next) => {
-    // Check if the user is an admin
     if (!req.user.isAdmin) {
         return next(errorHandler(403, 'You are not allowed to admit a student!'));
     }
 
-    // Destructure required fields from the request body
     const {
         enrollmentDate,
         firstName,
@@ -17,25 +16,36 @@ export const admitStudent = async (req, res, next) => {
         gender,
         grade,
         level,
+        dayBoarding,
         parent,
         contact,
-        feeBalance
+        sponsored
     } = req.body;
 
-    // Validate required fields
     if (
-        !enrollmentDate||
+        !enrollmentDate ||
         !firstName ||
         !lastName ||
         !DOB ||
         !gender ||
         !grade ||
-        !level
+        !level ||
+        !dayBoarding
     ) {
         return next(errorHandler(400, 'Please provide all required fields for the student.'));
     }
 
-    // Create a new student object (excluding admNumber)
+    // Initialize fee balances for current year terms
+    const currentYear = new Date().getFullYear();
+    const initialFeeBalances = ["Term 1", "Term 2", "Term 3"].map(term => ({
+        term,
+        year: currentYear,
+        amount: 0,
+        paid: 0,
+        balance: 0,
+        status: "Unpaid"
+    }));
+
     const newStudent = new Student({
         enrollmentDate,
         firstName,
@@ -45,61 +55,116 @@ export const admitStudent = async (req, res, next) => {
         gender,
         grade,
         level,
+        dayBoarding,
         parent,
         contact,
-        feeBalance
+        sponsored,
+        feeBalances: initialFeeBalances
     });
 
     try {
-        // Save the student (pre-save middleware will auto-generate admNumber)
         const savedStudent = await newStudent.save();
-        return res.status(200).json(savedStudent);
+        
+        // Automatically assign default fees based on level and dayBoarding
+        await assignDefaultFees(savedStudent._id, level, dayBoarding, currentYear, sponsored);
+        
+        return res.status(201).json(savedStudent);
     } catch (error) {
         next(error);
+    }
+};
+
+// Helper function to assign default fees
+const assignDefaultFees = async (studentId, level, dayBoarding, year, sponsored) => {
+    try {
+        const terms = ["Term 1", "Term 2", "Term 3"];
+        
+        for (const term of terms) {
+            const feeStructure = await FeeStructure.findOne({
+                level,
+                dayBoarding,
+                term,
+                year
+            });
+            
+            if (feeStructure) {
+                // For sponsored students, set paid equal to amount, balance to 0, and status to Paid
+                const update = sponsored 
+                    ? {
+                        "feeBalances.$[elem].amount": feeStructure.amount,
+                        "feeBalances.$[elem].paid": feeStructure.amount,
+                        "feeBalances.$[elem].balance": 0,
+                        "feeBalances.$[elem].status": "Paid"
+                    }
+                    : {
+                        "feeBalances.$[elem].amount": feeStructure.amount,
+                        "feeBalances.$[elem].balance": feeStructure.amount
+                    };
+
+                await Student.findByIdAndUpdate(studentId, {
+                    $set: update
+                }, {
+                    arrayFilters: [{ "elem.term": term, "elem.year": year }]
+                });
+            }
+        }
+    } catch (error) {
+        console.error("Error assigning default fees:", error);
     }
 };
 
 export const getStudents = async (req, res, next) => {
     try {
         const startIndex = parseInt(req.query.startIndex) || 0;
-        const limit = parseInt(req.query.limit) ;
+        const limit = parseInt(req.query.limit) || 10;
         const sortDirection = req.query.order === 'asc' ? 1 : -1;
-        const students = await Student.find({
-            ...(req.query.admNumber && { admNumber: req.query.admNumber }),
-            ...(req.query.firstName && { firstName: req.query.firstName }),
-            ...(req.query.LastName && { lastName: req.query.lastName }),
-            ...(req.query.middleName && { middleName: req.query.middleName }),
+        
+        const query = {
+            ...(req.query.admNumber && { admNumber: parseInt(req.query.admNumber) }),
+            ...(req.query.firstName && { firstName: { $regex: req.query.firstName, $options: 'i' } }),
+            ...(req.query.lastName && { lastName: { $regex: req.query.lastName, $options: 'i' } }),
+            ...(req.query.middleName && { middleName: { $regex: req.query.middleName, $options: 'i' } }),
             ...(req.query.gender && { gender: req.query.gender }),
             ...(req.query.level && { level: req.query.level }),
             ...(req.query.grade && { grade: req.query.grade }),
-            ...(req.query.feeBalance && { feeBalance: req.query.feeBalance }),
+            ...(req.query.dayBoarding && { dayBoarding: req.query.dayBoarding }),
+            ...(req.query.sponsored && { sponsored: req.query.sponsored === 'true' }),
             ...(req.query.searchTerm && {
                 $or: [
                     { admNumber: { $regex: req.query.searchTerm, $options: 'i' } },
-                ],
-            }),
-        })
+                    { firstName: { $regex: req.query.searchTerm, $options: 'i' } },
+                    { lastName: { $regex: req.query.searchTerm, $options: 'i' } }
+                ]
+            })
+        };
+
+        const students = await Student.find(query)
             .sort({ updatedAt: sortDirection })
             .skip(startIndex)
             .limit(limit);
 
-        const totalstudents = await Student.countDocuments();
-
-        
-
-        const now = new Date();
+        const totalStudents = await Student.countDocuments(query);
 
         res.status(200).json({
             students,
-            totalstudents,
+            totalStudents
         });
     } catch (error) {
         next(error);
     }
 };
 
-
-
+export const getStudent = async (req, res, next) => {
+    try {
+        const student = await Student.findOne({ admNumber: parseInt(req.params.admNumber) });
+        if (!student) {
+            return next(errorHandler(404, 'Student not found'));
+        }
+        res.status(200).json(student);
+    } catch (error) {
+        next(error);
+    }
+};
 
 export const updateStudent = async (req, res, next) => {
     if (!req.user.isAdmin) {
@@ -107,22 +172,15 @@ export const updateStudent = async (req, res, next) => {
     }
     
     try {
+        // Handle fee payment updates separately
+        if (req.body.feePayment) {
+            return handleFeePayment(req, res, next);
+        }
+
         const updatedStudent = await Student.findOneAndUpdate(
-            { admNumber: req.params.admNumber },  // Find by admission number
-            {
-                $set: {
-                    enrollmentDate: req.body.enrollmentDate,
-                    firstName: req.body.firstName,
-                    lastName: req.body.lastName,
-                    middleName: req.body.middleName,
-                    gender: req.body.gender,
-                    level: req.body.level,
-                    grade: req.body.grade,
-                    feeBalance: req.body.feeBalance,
-                    // Add other fields as needed
-                },
-            },
-            { new: true }  // Return the updated document
+            { admNumber: parseInt(req.params.admNumber) },
+            { $set: req.body },
+            { new: true }
         );
 
         if (!updatedStudent) {
@@ -135,17 +193,108 @@ export const updateStudent = async (req, res, next) => {
     }
 };
 
-
-export const deleteStudent = async (req, res, next) => {
-    if (!req.user.isAdmin || req.user.id !== req.params.userId) {
-        return next(errorHandler(403, 'You are not allowed to delete this student'));
-    }
+const handleFeePayment = async (req, res, next) => {
     try {
-        await Student.findOneAndDelete({ admNumber: req.params.admNumber });
-        res.status(200).json('This student has been deleted');
+        const { amount, term, year, receiptNumber, recordedBy } = req.body.feePayment;
+        
+        // Convert amount to number to prevent string concatenation
+        const paymentAmount = Number(amount);
+        if (isNaN(paymentAmount)) {
+            return next(errorHandler(400, 'Invalid payment amount'));
+        }
+
+        const student = await Student.findOne({ admNumber: parseInt(req.params.admNumber) });
+        if (!student) {
+            return next(errorHandler(404, 'Student not found'));
+        }
+
+        // If student is sponsored, don't process payment and return current status
+        if (student.sponsored) {
+            return res.status(200).json({
+                ...student.toObject(),
+                message: "Student is sponsored - fees are fully paid"
+            });
+        }
+
+        // Update fee balance
+        const feeBalanceIndex = student.feeBalances.findIndex(
+            fb => fb.term === term && fb.year === year
+        );
+
+        if (feeBalanceIndex === -1) {
+            return next(errorHandler(400, 'Fee structure not found for this term and year'));
+        }
+
+        // Ensure all values are treated as numbers
+        const currentPaid = Number(student.feeBalances[feeBalanceIndex].paid) || 0;
+        const feeAmount = Number(student.feeBalances[feeBalanceIndex].amount) || 0;
+        
+        const updatedPaid = currentPaid + paymentAmount;
+        const updatedBalance = feeAmount - updatedPaid;
+        const status = updatedBalance <= 0 ? "Paid" : (updatedPaid > 0 ? "Partial" : "Unpaid");
+
+        // Add to payment history
+        const paymentRecord = {
+            date: new Date(),
+            amount: paymentAmount, // Store as number
+            term,
+            year,
+            receiptNumber,
+            recordedBy: recordedBy || req.user.username
+        };
+
+        const updatedStudent = await Student.findOneAndUpdate(
+            { admNumber: parseInt(req.params.admNumber) },
+            {
+                $set: {
+                    [`feeBalances.${feeBalanceIndex}.paid`]: updatedPaid,
+                    [`feeBalances.${feeBalanceIndex}.balance`]: updatedBalance,
+                    [`feeBalances.${feeBalanceIndex}.status`]: status
+                },
+                $push: { feeHistory: paymentRecord }
+            },
+            { new: true }
+        );
+
+        res.status(200).json(updatedStudent);
     } catch (error) {
         next(error);
     }
+};
 
-}
 
+export const deleteStudent = async (req, res, next) => {
+    if (!req.user.isAdmin) {
+        return next(errorHandler(403, 'You are not allowed to delete this student'));
+    }
+    try {
+        await Student.findOneAndDelete({ admNumber: parseInt(req.params.admNumber) });
+        res.status(200).json('Student has been deleted');
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Additional fee-related controller methods
+export const getStudentFeeDetails = async (req, res, next) => {
+    try {
+        const student = await Student.findOne({ admNumber: parseInt(req.params.admNumber) });
+        if (!student) {
+            return next(errorHandler(404, 'Student not found'));
+        }
+
+        const currentYear = new Date().getFullYear();
+        const feeStructures = await FeeStructure.find({
+            level: student.level,
+            dayBoarding: student.dayBoarding,
+            year: currentYear
+        });
+
+        res.status(200).json({
+            student,
+            feeStructures
+        });
+    } catch (error) {
+        next(error);
+    }
+};

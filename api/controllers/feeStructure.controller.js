@@ -6,15 +6,15 @@ export const createFeeStructure = async (req, res, next) => {
         return next(errorHandler(403, "You are not authorized to set the fee structure."));
     }
 
-    const { level, term, amount } = req.body;
+    const { dayBoarding, year, level, term, amount } = req.body;
 
-    if (!level || !term || !amount) {
+    if (!dayBoarding ||!level|| !year || !term || !amount) {
         return next(errorHandler(400, "Please provide level, term, and amount."));
     }
 
     try {
         // Find existing fee structure for the level and term
-        const existingFee = await FeeStructure.findOne({ level, term });
+        const existingFee = await FeeStructure.findOne({dayBoarding, level, term });
 
         if (existingFee) {
             // Update the existing fee structure
@@ -26,10 +26,10 @@ export const createFeeStructure = async (req, res, next) => {
             });
         } else {
             // Create a new fee structure
-            const newFee = new FeeStructure({ level, term, amount });
+            const newFee = new FeeStructure({ dayBoarding, level, term, year, amount });
             const savedFee = await newFee.save();
             return res.status(201).json({
-                message: `Fee structure for ${level} - ${term} created successfully.`,
+                message: `Fee structure ${dayBoarding} school for ${level} - ${term} created successfully.`,
                 feeStructure: savedFee,
             });
         }
@@ -37,7 +37,6 @@ export const createFeeStructure = async (req, res, next) => {
         next(error);
     }
 };
-
 
 export const getFeeStructures = async (req, res, next) => {
     try {

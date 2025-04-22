@@ -1,22 +1,25 @@
 import mongoose from 'mongoose';
 
-// Step 1: Define the Counter Schema
 const counterSchema = new mongoose.Schema({
-    _id: { type: String, required: true }, // Identifier for the counter
-    lastAdmNumber: { type: Number, default: 1001 } // Start from 1000
+    _id: { type: String, required: true },
+    lastAdmNumber: { type: Number, default: 1001 }
 });
 
-// Step 2: Create the Counter Model
 const Counter = mongoose.model('Counter', counterSchema);
 
-// Step 3: Define the Student Schema
 const studentSchema = new mongoose.Schema({
     admNumber: { type: Number, unique: true },
-    enrollmentDate: {type: Date, required: true},
+    enrollmentDate: { type: Date, required: true },
     firstName: { type: String, required: true },
     middleName: { type: String },
     lastName: { type: String, required: true },
     gender: { type: String, enum: ["Male", "Female"], required: true },
+    dayBoarding: { 
+        type: String, 
+        enum: ["Day", "Boarding"], 
+        required: true 
+    },
+    sponsored: { type: Boolean, default: false, required: true },
     studentPhoto: {
         type: String,
         default: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'
@@ -34,25 +37,33 @@ const studentSchema = new mongoose.Schema({
     DOB: { type: Date, required: true },
     parent: { type: String },
     contact: { type: Number },
-    feeBalance: { type: Map, of: Number }
+    feeBalances: [{
+        term: { type: String, enum: ["Term 1", "Term 2", "Term 3"] },
+        year: { type: Number },
+        amount: { type: Number, default: 0 },
+        paid: { type: Number, default: 0 },
+        balance: { type: Number, default: 0 },
+        status: { type: String, enum: ["Paid", "Partial", "Unpaid"], default: "Unpaid" }
+    }],
+    feeHistory: [{
+        date: { type: Date, default: Date.now },
+        amount: { type: Number },
+        term: { type: String },
+        year: { type: Number },
+        receiptNumber: { type: String },
+        recordedBy: { type: String }
+    }]
 }, { timestamps: true });
 
-// Step 4: Pre-Save Middleware to Auto-Increment Admission Number
 studentSchema.pre('save', async function (next) {
-    if (!this.isNew) {
-        // If the document is not new, skip admission number generation
-        return next();
-    }
+    if (!this.isNew) return next();
 
     try {
-        // Find and increment the counter
         const counter = await Counter.findByIdAndUpdate(
-            { _id: 'studentAdmNumber' }, // Identifier for the counter
-            { $inc: { lastAdmNumber: 1 } }, // Increment the lastAdmNumber by 1
-            { new: true, upsert: true } // Create the counter if it doesn't exist
+            { _id: 'studentAdmNumber' },
+            { $inc: { lastAdmNumber: 1 } },
+            { new: true, upsert: true }
         );
-
-        // Assign the incremented value to the student's admNumber
         this.admNumber = counter.lastAdmNumber;
         next();
     } catch (error) {
@@ -60,7 +71,5 @@ studentSchema.pre('save', async function (next) {
     }
 });
 
-// Step 5: Create the Student Model
 const Student = mongoose.model('Student', studentSchema);
-
 export default Student;

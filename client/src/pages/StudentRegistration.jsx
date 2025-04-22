@@ -7,15 +7,17 @@ import {
   Spinner,
   Select,
   Label,
+  Radio,
+  Checkbox
 } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 
-//Create admission number
-//finish paying fee function
-//add other fields to admission page
-
 export default function StudentRegistration() {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    gender: "Female", // Default gender
+    dayBoarding: "Day", // Default residence type
+    sponsored: false // Default sponsorship status
+  });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -28,7 +30,7 @@ export default function StudentRegistration() {
 
     // If the grade is changed, update the level accordingly
     if (id === "grade") {
-      const grade = parseInt(value.split(" ")[1]); // Extract the grade number
+      const grade = value.split(" ")[1] ? parseInt(value.split(" ")[1]) : 0; // Extract the grade number
       let level = "";
 
       if (grade >= 1 && grade <= 3) {
@@ -55,12 +57,12 @@ export default function StudentRegistration() {
     if (
       !formData.enrollmentDate ||
       !formData.firstName ||
-      //!formData.middleName ||
       !formData.lastName ||
       !formData.DOB ||
       !formData.gender ||
       !formData.grade ||
-      !formData.level
+      !formData.level ||
+      !formData.dayBoarding
     ) {
       setError("Please fill in all required fields.");
       return;
@@ -71,13 +73,17 @@ export default function StudentRegistration() {
       const res = await fetch("/api/student/admit-student", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          sponsored: formData.sponsored || false // Ensure sponsored is included
+        }),
       });
 
       const data = await res.json();
       if (data.success === false) {
         setLoading(false);
         setError(data.message);
+        return;
       }
 
       if (res.ok) {
@@ -87,7 +93,7 @@ export default function StudentRegistration() {
       }
     } catch (error) {
       setLoading(false);
-      setError(error);
+      setError(error.message);
     }
   };
 
@@ -111,19 +117,21 @@ export default function StudentRegistration() {
             id="enrollmentDate"
             placeholder="Admission Number"
             onChange={handleChange}
-            
+            required
           />
           <TextInput
             type="text"
             id="firstName"
             placeholder="First Name"
             onChange={handleChange}
+            required
           />
           <TextInput
             type="text"
             id="lastName"
             placeholder="Last Name"
             onChange={handleChange}
+            required
           />
           <TextInput
             type="text"
@@ -131,19 +139,39 @@ export default function StudentRegistration() {
             placeholder="Middle Name"
             onChange={handleChange}
           />
-          <TextInput type="date" id="DOB" onChange={handleChange} />
-
-          <Select
-            id="gender"
-            onChange={handleChange}
-            className="input"
-            required
-          >
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </Select>
+          <TextInput 
+            type="date" 
+            id="DOB" 
+            onChange={handleChange} 
+            required 
+          />
+          <div className="flex flex-row gap-3 items-center">
+            <div className="flex">
+              <h1 className="text-sm font-medium text-gray-900">Gender:</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <Radio
+                id="gender-female"
+                name="gender"
+                value="Female"
+                checked={formData.gender === "Female"}
+                onChange={() => setFormData({...formData, gender: "Female"})}
+              />
+              <Label htmlFor="gender-female">Female</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Radio
+                id="gender-male"
+                name="gender"
+                value="Male"
+                checked={formData.gender === "Male"}
+                onChange={() => setFormData({...formData, gender: "Male"})}
+              />
+              <Label htmlFor="gender-male">Male</Label>
+            </div>
+          </div>
         </div>
+
         <div className="mt-2 border-b-4 border-black">
           <Label>Contact Information </Label>
         </div>
@@ -154,14 +182,17 @@ export default function StudentRegistration() {
             id="parent"
             placeholder="Parent/Guardian"
             onChange={handleChange}
+            required
           />
           <TextInput
-            type="phone"
+            type="tel"
             id="contact"
-            placeholder="Parent/Guardian"
+            placeholder="Parent/Guardian Phone"
             onChange={handleChange}
+            required
           />
         </div>
+
         <div className="mt-2 border-b-4 border-black">
           <Label>Academic Information </Label>
         </div>
@@ -173,6 +204,7 @@ export default function StudentRegistration() {
             onChange={handleChange}
             className="input"
             disabled
+            required
           >
             <option value="">Select Level</option>
             <option value="Pre-Primary">Pre-Primary</option>
@@ -186,6 +218,7 @@ export default function StudentRegistration() {
             value={formData.grade || ""}
             onChange={handleChange}
             className="input"
+            required
           >
             <option value="">Select Grade</option>
             <option value="Play Group">Play Group</option>
@@ -204,6 +237,43 @@ export default function StudentRegistration() {
             <option value="Grade 11">Grade 11</option>
             <option value="Grade 12">Grade 12</option>
           </Select>
+
+          {/* Sponsor Field */}
+          <div className="flex items-center gap-2">
+            <Checkbox 
+              id="sponsored" 
+              checked={formData.sponsored || false}
+              onChange={(e) => setFormData({...formData, sponsored: e.target.checked})}
+            />
+            <Label htmlFor="sponsored">Sponsored Student?</Label>
+          </div>
+
+          {/* Boarding/Day Field */}
+          <div className="flex flex-col gap-2">
+            <Label>Residence Type:</Label>
+            <div className="flex gap-4">
+              <div className="flex items-center gap-2">
+                <Radio
+                  id="dayBoarding-day"
+                  name="dayBoarding"
+                  value="Day"
+                  checked={formData.dayBoarding === "Day"}
+                  onChange={() => setFormData({...formData, dayBoarding: "Day"})}
+                />
+                <Label htmlFor="dayBoarding-day">Day</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Radio
+                  id="dayBoarding-boarding"
+                  name="dayBoarding"
+                  value="Boarding"
+                  checked={formData.dayBoarding === "Boarding"}
+                  onChange={() => setFormData({...formData, dayBoarding: "Boarding"})}
+                />
+                <Label htmlFor="dayBoarding-boarding">Boarding</Label>
+              </div>
+            </div>
+          </div>
         </div>
 
         <Button
