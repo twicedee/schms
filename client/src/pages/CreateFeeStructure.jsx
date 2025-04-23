@@ -5,10 +5,13 @@ import {
   Table,
   Tabs,
   TabItem,
-  Alert
+  Alert,
+  Accordion,
+  Badge
 } from "flowbite-react";
 import React, { useState, useEffect } from "react";
 import { HiInformationCircle } from "react-icons/hi";
+import UpdateFees from "../components/UpdateFees"
 
 export default function CreateFeeStructure() {
   const [formData, setFormData] = useState({
@@ -16,10 +19,10 @@ export default function CreateFeeStructure() {
     level: "",
     year: new Date().getFullYear(),
     term: "",
-    amount: ""
+    amount: null
   });
   const [loading, setLoading] = useState(false);
-  const [feeStructure, setFeeStructure] = useState([]);
+  const [feeStructure, setFeeStructure] = useState({});
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
@@ -40,7 +43,7 @@ export default function CreateFeeStructure() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    const dayBoardingValue = tab === 0 ? "Boarding" : "Day"; //
+    const dayBoardingValue = tab === 0 ? "Boarding" : "Day"; 
     setFormData(prev => ({ ...prev, dayBoarding: dayBoardingValue }));
   };
 
@@ -53,7 +56,7 @@ export default function CreateFeeStructure() {
         
         if (!res.ok) throw new Error(data.message || "Failed to fetch fees");
         
-        setFeeStructure(Array.isArray(data) ? data : []);
+        setFeeStructure(data || {});
         setError(null);
       } catch (err) {
         setError(err.message);
@@ -67,12 +70,7 @@ export default function CreateFeeStructure() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !formData.level ||
-      !formData.year ||
-      !formData.term ||
-      !formData.amount
-    ) {
+    if (!formData.level || !formData.year || !formData.term || !formData.amount) {
       setError("Please provide level, term, and amount.");
       return;
     }
@@ -82,10 +80,7 @@ export default function CreateFeeStructure() {
       const res = await fetch("/api/fee/create-fee-structure", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          dayBoarding: activeTab, // Ensure activeTab value is included
-        }),
+        body: JSON.stringify(formData),
       });
 
       const data = await res.json();
@@ -95,21 +90,34 @@ export default function CreateFeeStructure() {
         return;
       }
 
+      setSuccess("Fee structure created successfully!");
       setError(null);
-      setLoading(false);
+      
       // Refresh the fee structure after successful submission
       const refreshRes = await fetch("/api/fee/get-fee-structure");
       const refreshData = await refreshRes.json();
-      if (refreshRes.ok && Array.isArray(refreshData)) {
+      if (refreshRes.ok) {
         setFeeStructure(refreshData);
       }
+      
+      // Reset form
+      // setFormData({
+      //   dayBoarding: activeTab === 0 ? "Boarding" : "Day",
+      //   level: "",
+      //   year: new Date().getFullYear(),
+      //   term: "",
+      //   amount: null
+      // });
     } catch (err) {
       setError("An error occurred while saving the fee structure.");
+    } finally {
       setLoading(false);
     }
   };
 
-  
+  // Sort years in descending order
+  const sortedYears = Object.keys(feeStructure).sort((a, b) => b - a);
+
   return (
     <div className="m-20 flex flex-col">
       <div className="mb-4 text-center">
@@ -142,80 +150,82 @@ export default function CreateFeeStructure() {
         </Alert>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="level" className="block mb-2 text-sm font-medium text-gray-900">
-            Select Level
-          </label>
-          <Select
-            id="level"
-            required
-            onChange={handleChange}
-            value={formData.level}
-          >
-            <option value="">Choose a level</option>
-            {levels.map((level) => (
-              <option key={level} value={level}>
-                {level}
-              </option>
-            ))}
-          </Select>
-        </div>
+      <form onSubmit={handleSubmit} className="space-y-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="level" className="block mb-2 text-sm font-medium text-gray-900">
+              Select Level
+            </label>
+            <Select
+              id="level"
+              required
+              onChange={handleChange}
+              value={formData.level}
+            >
+              <option value="">Choose a level</option>
+              {levels.map((level) => (
+                <option key={level} value={level}>
+                  {level}
+                </option>
+              ))}
+            </Select>
+          </div>
 
-        <div>
-          <label htmlFor="term" className="block mb-2 text-sm font-medium text-gray-900">
-            Select Term
-          </label>
-          <Select
-            id="term"
-            required
-            onChange={handleChange}
-            value={formData.term}
-          >
-            <option value="">Choose a term</option>
-            {terms.map((term) => (
-              <option key={term} value={term}>
-                {term}
-              </option>
-            ))}
-          </Select>
-        </div>
+          <div>
+            <label htmlFor="term" className="block mb-2 text-sm font-medium text-gray-900">
+              Select Term
+            </label>
+            <Select
+              id="term"
+              required
+              onChange={handleChange}
+              value={formData.term}
+            >
+              <option value="">Choose a term</option>
+              {terms.map((term) => (
+                <option key={term} value={term}>
+                  {term}
+                </option>
+              ))}
+            </Select>
+          </div>
 
-        <div>
-          <label htmlFor="year" className="block mb-2 text-sm font-medium text-gray-900">
-            Year
-          </label>
-          <Select
-            id="year"
-            required
-            onChange={handleChange}
-            value={formData.year}
-          >
-            {Array.from(
-              { length: 20 },
-              (_, i) => new Date().getFullYear() - i
-            ).map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </Select>
-        </div>
+          <div>
+            <label htmlFor="year" className="block mb-2 text-sm font-medium text-gray-900">
+              Year
+            </label>
+            <Select
+              id="year"
+              required
+              onChange={handleChange}
+              value={formData.year}
+            >
+              {Array.from(
+                { length: 20 },
+                (_, i) => new Date().getFullYear() - i
+              ).map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </Select>
+          </div>
 
-        <div>
-          <label htmlFor="amount" className="block mb-2 text-sm font-medium text-gray-900">
-            Fee Amount (KES)
-          </label>
-          <TextInput
-            id="amount"
-            type="number"
-            required
-            min="0"
-            step="100"
-            placeholder="Enter fee amount"
-            onChange={handleChange}
-            value={formData.amount}
-          />
+          <div>
+            <label htmlFor="amount" className="block mb-2 text-sm font-medium text-gray-900">
+              Fee Amount (KES)
+            </label>
+            <TextInput
+              id="amount"
+              type="number"
+              required
+              min="0"
+              step="100"
+              placeholder="Enter fee amount"
+              onChange={handleChange}
+              value={formData.amount}
+            />
+          </div>
         </div>
 
         <div className="mt-4 flex justify-end">
@@ -224,46 +234,64 @@ export default function CreateFeeStructure() {
           </Button>
         </div>
       </form>
+      <UpdateFees/>
 
-      {/* Fee Structure Table */}
-      <div className="border border-gray-200 rounded-lg p-5 mt-8">
-        <div className="mt-2">
-          <h2 className="mb-4 text-xl font-bold">
-            {activeTab === 0 ? "Boarding" : "Day"} School Fee Structure
-          </h2>
-          <div className="overflow-x-auto">
-            <Table hoverable>
-              <Table.Head>
-                <Table.HeadCell>Level</Table.HeadCell>
-                {terms.map((term) => (
-                  <Table.HeadCell key={term}>{term}</Table.HeadCell>
-                ))}
-              </Table.Head>
-              <Table.Body className="divide-y">
-                {levels.map((level) => (
-                  <Table.Row key={level} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                    <Table.Cell className="font-medium whitespace-nowrap text-gray-900 dark:text-white">
-                      {level}
-                    </Table.Cell>
-                    {terms.map((term) => {
-                      const fee = feeStructure.find(
-                        (item) =>
-                          item.level === level &&
-                          item.term === term &&
-                          item.dayBoarding === (activeTab === 0 ? "Boarding" : "Day")
-                      );
-                      return (
-                        <Table.Cell key={term}>
-                          {fee ? `KES ${fee.amount.toLocaleString()}` : "-"}
-                        </Table.Cell>
-                      );
-                    })}
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
-          </div>
-        </div>
+      {/* Fee Structure by Year */}
+      <div className="border border-gray-200 rounded-lg p-5">
+        <h2 className="mb-4 text-xl font-bold">
+          {activeTab === 0 ? "Boarding" : "Day"} School Fee Structures by Year
+        </h2>
+        
+        {sortedYears.length === 0 ? (
+          <p className="text-gray-500">No fee structures found</p>
+        ) : (
+          <Accordion alwaysOpen={true}>
+            {sortedYears.map((year) => (
+              <Accordion.Panel key={year}>
+                <Accordion.Title>
+                  <div className="flex items-center justify-between w-full">
+                    <span>Year {year}</span>
+                    <Badge color="gray">{feeStructure[year].length} entries</Badge>
+                  </div>
+                </Accordion.Title>
+                <Accordion.Content>
+                  <div className="overflow-x-auto">
+                    <Table hoverable>
+                      <Table.Head>
+                        <Table.HeadCell>Level</Table.HeadCell>
+                        {terms.map((term) => (
+                          <Table.HeadCell key={term}>{term}</Table.HeadCell>
+                        ))}
+                      </Table.Head>
+                      <Table.Body className="divide-y">
+                        {levels.map((level) => (
+                          <Table.Row key={level} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                            <Table.Cell className="font-medium whitespace-nowrap text-gray-900 dark:text-white">
+                              {level}
+                            </Table.Cell>
+                            {terms.map((term) => {
+                              const fee = feeStructure[year].find(
+                                (item) =>
+                                  item.level === level &&
+                                  item.term === term &&
+                                  item.dayBoarding === (activeTab === 0 ? "Boarding" : "Day")
+                              );
+                              return (
+                                <Table.Cell key={term}>
+                                  {fee ? `KES ${fee.amount?.toLocaleString() ?? '0'}` : "-"}
+                                </Table.Cell>
+                              );
+                            })}
+                          </Table.Row>
+                        ))}
+                      </Table.Body>
+                    </Table>
+                  </div>
+                </Accordion.Content>
+              </Accordion.Panel>
+            ))}
+          </Accordion>
+        )}
       </div>
     </div>
   );

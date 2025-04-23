@@ -1,4 +1,4 @@
-import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
+import { Alert, Button, Label, Spinner, TextInput, Select } from "flowbite-react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 //import OAuth from '../components/OAuth';
@@ -79,7 +79,7 @@ export default function SignUp() {
               <Label value="Your Initials" />
               <Select
                 id="initials"
-                value = ""
+                
                 onChange={handleChange}
                 className="input"
                 required

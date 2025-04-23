@@ -84,11 +84,11 @@ export default function MainSidebar({ isVisible, onClose }) {
                 Staff
               </SidebarItem>
             </Link>
-            <Link to="/finance">
+            {currentUser.isAdmin && (<Link to="/finance">
               <SidebarItem icon={FaMoneyCheckAlt} as="div">
                 Finance
               </SidebarItem>
-            </Link>
+            </Link>)}
             {currentUser.isAdmin && (<Link to="/administration">
               <SidebarItem icon={MdAdminPanelSettings} as="div">
                 Administration

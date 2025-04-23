@@ -87,14 +87,14 @@ export default function StudentPage() {
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
           Student Profile
         </h1>
-        <div className="flex gap-2">
+        {currentUser.isAdmin && (<div className="flex gap-2">
           <Button color="failure" onClick={() => setShowModal(true)}>
             Delete
           </Button>
           <Link to={`/update-student/${student.admNumber}`}>
             <Button color="success">Update</Button>
           </Link>
-        </div>
+        </div>)}
       </div>
 
       {/* Profile Card */}
@@ -130,7 +130,7 @@ export default function StudentPage() {
                 <p className="flex items-center gap-2">
                   <span className="font-medium">Status:</span> 
                   <Badge color={student.dayBoarding === "Day" ? "info" : "pink"}>
-                    {student.dayBoarding} {student.sponscer && "(Sponsored)"}
+                    {student.dayBoarding} {student.sponsored && "(Sponsored)"}
                   </Badge>
                 </p>
               </div>
@@ -206,7 +206,7 @@ export default function StudentPage() {
                   <p><span className="font-medium">Full Name:</span> {student.firstName} {student.middleName} {student.lastName}</p>
                   <p><span className="font-medium">Date of Birth:</span> {new Date(student.DOB).toLocaleDateString()}</p>
                   <p><span className="font-medium">Gender:</span> {student.gender}</p>
-                  <p><span className="font-medium">Status:</span> {student.dayBoarding} {student.sponscer && "(Sponsored)"}</p>
+                  <p><span className="font-medium">Status:</span> {student.dayBoarding} {student.sponsored && "(Sponsored)"}</p>
                 </div>
               </div>
               
@@ -235,11 +235,12 @@ export default function StudentPage() {
           <div>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold text-gray-800 dark:text-white">Fee Balances</h3>
-              <Link to={`/student-finance/${student.admNumber}`}>
+              {currentUser.isAdmin && (<Link to={`/student-finance/${student.admNumber}`}>
                 <Button size="sm" gradientMonochrome="cyan">
                   Manage Fees
                 </Button>
-              </Link>
+              </Link>)}
+              
             </div>
             
             <Table hoverable>

@@ -1,6 +1,7 @@
 import FeeStructure from "../models/feeStructure.model.js";
 import { errorHandler } from "../utils/error.js";
 
+
 export const createFeeStructure = async (req, res, next) => {
     if (!req.user.isAdmin) {
         return next(errorHandler(403, "You are not authorized to set the fee structure."));
@@ -14,7 +15,7 @@ export const createFeeStructure = async (req, res, next) => {
 
     try {
         // Find existing fee structure for the level and term
-        const existingFee = await FeeStructure.findOne({dayBoarding, level, term, year});
+        const existingFee = await FeeStructure.findOne({dayBoarding, level, term});
 
         if (existingFee) {
             // Update the existing fee structure
@@ -38,15 +39,49 @@ export const createFeeStructure = async (req, res, next) => {
     }
 };
 
+// export const createFeeStructure = async (req, res, next) => {
+//     if (!req.user.isAdmin) {
+//         return next(errorHandler(403, "You are not authorized to set the fee structure."));
+//     }
+
+//     const { dayBoarding, year, level, term, amount } = req.body;
+
+//     if (!dayBoarding || !level || !year || !term || !amount) {
+//         return next(errorHandler(400, "Please provide level, term, and amount."));
+//     }
+
+//     try {
+//         // Always create a new fee structure
+//         const newFee = new FeeStructure({ dayBoarding, level, term, year, amount });
+//         const savedFee = await newFee.save();
+//         return res.status(201).json({
+//             message: `Fee structure ${dayBoarding} school for ${level} - ${term} created successfully.`,
+//             feeStructure: savedFee,
+//         });
+//     } catch (error) {
+//         next(error);
+//     }
+// };
+
 export const getFeeStructures = async (req, res, next) => {
     try {
-        const feeStructures = await FeeStructure.find().sort({ level: 1, term: 1 });
-        res.status(200).json(feeStructures);
+        // Get all fee structures sorted by year (descending), then level, then term
+        const feeStructures = await FeeStructure.find().sort({ year: -1, level: 1, term: 1 });
+        
+        // Group by year for better organization
+        const groupedByYear = feeStructures.reduce((acc, fee) => {
+            if (!acc[fee.year]) {
+                acc[fee.year] = [];
+            }
+            acc[fee.year].push(fee);
+            return acc;
+        }, {});
+        
+        res.status(200).json(groupedByYear);
     } catch (error) {
         next(error);
     }
 };
-
 
 export const getFeeForLevelAndTerm = async (req, res, next) => {
     const { level, term } = req.query;
@@ -67,7 +102,6 @@ export const getFeeForLevelAndTerm = async (req, res, next) => {
         next(error);
     }
 };
-
 
 export const deleteFeeStructure = async (req, res, next) => {
     if (!req.user.isAdmin) {
