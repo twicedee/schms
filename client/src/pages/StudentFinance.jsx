@@ -1,20 +1,19 @@
-import { 
-  TextInput, 
-  Alert, 
-  Avatar, 
-  Button, 
-  Label, 
-  Badge, 
-  Table, 
+import {
+  TextInput,
+  Alert,
+  Avatar,
+  Button,
+  Label,
+  Badge,
+  Table,
   Spinner,
   Select,
-  Modal
+  Modal,
 } from "flowbite-react";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { HiOutlineCash, HiOutlineReceiptTax } from 'react-icons/hi';
+import { HiOutlineCash, HiOutlineReceiptTax } from "react-icons/hi";
 import { useSelector } from "react-redux";
-
 
 export default function StudentFinance() {
   const { currentUser } = useSelector((state) => state.user);
@@ -28,17 +27,19 @@ export default function StudentFinance() {
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [formData, setFormData] = useState({
-    amount: '',
-    term: '',
-    receiptNumber: '',
-    year: new Date().getFullYear()
+    amount: "",
+    term: "",
+    receiptNumber: "",
+    year: new Date().getFullYear(),
   });
 
   useEffect(() => {
     const fetchStudent = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/student/get-students?admNumber=${studentId}`);
+        const res = await fetch(
+          `/api/student/get-students?admNumber=${studentId}`
+        );
         const data = await res.json();
         if (!res.ok) {
           setError(data.message || "Failed to fetch student");
@@ -66,7 +67,7 @@ export default function StudentFinance() {
     e.preventDefault();
     setPaymentLoading(true);
     setError(null);
-    
+
     if (!formData.amount || !formData.term) {
       setError("Please fill in all required fields");
       setPaymentLoading(false);
@@ -80,27 +81,28 @@ export default function StudentFinance() {
         body: JSON.stringify({
           feePayment: {
             ...formData,
-            recordedBy: `${currentUser.initials}${currentUser.firstName} ${currentUser.lastName}` // Replace with actual user from your auth system
-          }
+            recordedBy: `${currentUser.initials}${currentUser.firstName} ${currentUser.lastName}`,
+          },
         }),
       });
       const data = await res.json();
-      
+
       if (!res.ok) {
         setError(data.message || "Payment failed");
         return;
       }
-      
+
       setSuccess("Payment recorded successfully!");
       setFormData({
-        amount: '',
-        term: '',
-        receiptNumber: '',
-        year: new Date().getFullYear()
+        amount: "",
+        term: "",
+        receiptNumber: "",
+        year: new Date().getFullYear(),
       });
       setShowPaymentModal(false);
-      // Refresh student data
-      const refreshRes = await fetch(`/api/student/get-students?admNumber=${studentId}`);
+      const refreshRes = await fetch(
+        `/api/student/get-students?admNumber=${studentId}`
+      );
       const refreshData = await refreshRes.json();
       if (refreshRes.ok) {
         setStudent(refreshData.students[0]);
@@ -114,9 +116,9 @@ export default function StudentFinance() {
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'Paid':
+      case "Paid":
         return <Badge color="success">{status}</Badge>;
-      case 'Partial':
+      case "Partial":
         return <Badge color="warning">{status}</Badge>;
       default:
         return <Badge color="failure">{status}</Badge>;
@@ -133,7 +135,6 @@ export default function StudentFinance() {
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
-      {/* Header Section */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
           Student Finance
@@ -144,7 +145,6 @@ export default function StudentFinance() {
         </Button>
       </div>
 
-      {/* Student Info Card */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-shrink-0">
@@ -155,18 +155,21 @@ export default function StudentFinance() {
               className="border-2 border-gray-200 dark:border-gray-600"
             />
           </div>
-          
+
           <div className="flex-1">
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
               {student?.firstName} {student?.middleName} {student?.lastName}
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Admission #: {student?.admNumber} | {student?.dayBoarding} {student?.sponscer && "(Sponsored)"}
+              Admission #: {student?.admNumber} | {student?.dayBoarding}{" "}
+              {student?.sponscer && "(Sponsored)"}
             </p>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Academic</h3>
+                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                  Academic
+                </h3>
                 <p className="text-gray-600 dark:text-gray-400">
                   <span className="font-medium">Grade:</span> {student?.grade}
                 </p>
@@ -174,14 +177,18 @@ export default function StudentFinance() {
                   <span className="font-medium">Level:</span> {student?.level}
                 </p>
               </div>
-              
+
               <div>
-                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Contact</h3>
+                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                  Contact
+                </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">Parent:</span> {student?.parent || "Not specified"}
+                  <span className="font-medium">Parent:</span>{" "}
+                  {student?.parent || "Not specified"}
                 </p>
                 <p className="text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">Phone:</span> {student?.contact || "Not specified"}
+                  <span className="font-medium">Phone:</span>{" "}
+                  {student?.contact || "Not specified"}
                 </p>
               </div>
             </div>
@@ -189,12 +196,11 @@ export default function StudentFinance() {
         </div>
       </div>
 
-      {/* Fee Balances */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
         <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
           Fee Balances
         </h3>
-        
+
         <Table hoverable>
           <Table.Head>
             <Table.HeadCell>Term</Table.HeadCell>
@@ -206,7 +212,10 @@ export default function StudentFinance() {
           </Table.Head>
           <Table.Body className="divide-y">
             {student?.feeBalances?.map((fee, index) => (
-              <Table.Row key={index} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+              <Table.Row
+                key={index}
+                className="bg-white dark:border-gray-700 dark:bg-gray-800"
+              >
                 <Table.Cell>{fee.term}</Table.Cell>
                 <Table.Cell>{fee.year}</Table.Cell>
                 <Table.Cell>KSh {fee.amount?.toLocaleString()}</Table.Cell>
@@ -219,12 +228,11 @@ export default function StudentFinance() {
         </Table>
       </div>
 
-      {/* Payment History */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
           Payment History
         </h3>
-        
+
         {student?.feeHistory?.length > 0 ? (
           <Table hoverable>
             <Table.Head>
@@ -237,9 +245,16 @@ export default function StudentFinance() {
             </Table.Head>
             <Table.Body className="divide-y">
               {student.feeHistory.map((payment, index) => (
-                <Table.Row key={index} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                  <Table.Cell>{new Date(payment.date).toLocaleDateString()}</Table.Cell>
-                  <Table.Cell>KSh {payment.amount?.toLocaleString()}</Table.Cell>
+                <Table.Row
+                  key={index}
+                  className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                >
+                  <Table.Cell>
+                    {new Date(payment.date).toLocaleDateString()}
+                  </Table.Cell>
+                  <Table.Cell>
+                    KSh {payment.amount?.toLocaleString()}
+                  </Table.Cell>
                   <Table.Cell>{payment.term}</Table.Cell>
                   <Table.Cell>{payment.year}</Table.Cell>
                   <Table.Cell>{payment.receiptNumber}</Table.Cell>
@@ -255,7 +270,6 @@ export default function StudentFinance() {
         )}
       </div>
 
-      {/* Payment Modal */}
       <Modal show={showPaymentModal} onClose={() => setShowPaymentModal(false)}>
         <Modal.Header>Record New Payment</Modal.Header>
         <Modal.Body>
@@ -271,7 +285,7 @@ export default function StudentFinance() {
                 placeholder="Enter amount"
               />
             </div>
-            
+
             <div>
               <Label htmlFor="term">Term</Label>
               <Select
@@ -286,7 +300,7 @@ export default function StudentFinance() {
                 <option value="Term 3">Term 3</option>
               </Select>
             </div>
-            
+
             <div>
               <Label htmlFor="year">Year</Label>
               <TextInput
@@ -297,7 +311,7 @@ export default function StudentFinance() {
                 required
               />
             </div>
-            
+
             <div>
               <Label htmlFor="receiptNumber">Receipt Number (Optional)</Label>
               <TextInput
@@ -308,7 +322,7 @@ export default function StudentFinance() {
                 placeholder="Enter receipt number"
               />
             </div>
-            
+
             <div className="flex justify-end gap-3 pt-4">
               <Button color="gray" onClick={() => setShowPaymentModal(false)}>
                 Cancel
@@ -328,14 +342,21 @@ export default function StudentFinance() {
         </Modal.Body>
       </Modal>
 
-      {/* Alerts */}
       {error && (
-        <Alert className="mb-4" color="failure" onDismiss={() => setError(null)}>
+        <Alert
+          className="mb-4"
+          color="failure"
+          onDismiss={() => setError(null)}
+        >
           {error}
         </Alert>
       )}
       {success && (
-        <Alert className="mb-4" color="success" onDismiss={() => setSuccess(null)}>
+        <Alert
+          className="mb-4"
+          color="success"
+          onDismiss={() => setSuccess(null)}
+        >
           {success}
         </Alert>
       )}

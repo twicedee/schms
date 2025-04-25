@@ -1,42 +1,10 @@
 import React from "react";
-import {
-  Avatar,
-  List,
-  Spinner,
-  Button,
-  Table,
-  TableCell,
-} from "flowbite-react";
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Spinner, Button } from "flowbite-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Finance() {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [students, setStudents] = useState([]); // State to store the list of students
-
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch("/api/student/get-students");
-        const data = await res.json();
-        if (!res.ok) {
-          setError(true);
-          setLoading(false);
-          return;
-        }
-        setStudents(data.students);
-        console.log(data.students[0]);
-        setLoading(false);
-        setError(false);
-      } catch (err) {
-        setError(true);
-        setLoading(false);
-      }
-    };
-    fetchStudents();
-  }, []); // Run only once when the component mounts
 
   if (loading) {
     return (

@@ -5,7 +5,7 @@ export default function FeeStructure() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [feeStructure, setFeeStructure] = useState([]);
-  const [activeTab, setActiveTab] = useState("Boarding"); // Default to "Boarding"
+  const [activeTab, setActiveTab] = useState("Boarding"); 
 
   const levels = [
     "Pre-Primary",
@@ -49,7 +49,6 @@ export default function FeeStructure() {
       <div className="mb-6">
         <h2 className="text-xl font-bold mb-4">Fee Structure</h2>
         
-        {/* Day/Boarding Tabs */}
         <Tabs 
           variant="fullWidth" 
           onActiveTabChange={(tab) => setActiveTab(tab === 0 ? "Boarding" : "Day")}
@@ -59,7 +58,6 @@ export default function FeeStructure() {
         </Tabs>
       </div>
 
-      {/* Fee Structure Table (Filtered by Day/Boarding) */}
       <div className="mt-4">
         <Table className="border border-gray-500 rounded-md">
           <Table.Head>

@@ -22,7 +22,6 @@ export const sendInvite = async (req, res, next) => {
     const newInvite = new Invite({ email, token, expirationTime });
     await newInvite.save();
 
-    // Send the invite email
     const transporter = nodemailer.createTransport({
       service: 'Gmail',
       auth: {

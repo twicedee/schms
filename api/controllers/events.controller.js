@@ -1,16 +1,13 @@
 import eventDates from "../models/events.model.js";
 import { errorHandler } from "../utils/error.js";
 
-// Create or update event dates
 export const setEventDates = async (req, res, next) => {
-  // Check if the user is an admin
   if (!req.user.isAdmin) {
     return next(errorHandler(403, "Unauthorized action"));
   }
 
   const { event, date, description, term, startDate, endDate } = req.body;
 
-  // Validate required fields based on the event type
   if (event === "important") {
     if (!date || !description ) {
       return next(
@@ -29,16 +26,13 @@ export const setEventDates = async (req, res, next) => {
 
   try {
     let newEvent;
-
     if (event === "important") {
-      // Create or update important date
       newEvent = new eventDates({
         event,
         date,
         description,
       });
     } else if (event === "term") {
-      // Create or update term date
       newEvent = new eventDates({
         event,
         term,
@@ -54,7 +48,6 @@ export const setEventDates = async (req, res, next) => {
   }
 };
 
-// Fetch all event dates
 export const getEventDates = async (req, res, next) => {
   try {
     const events = await eventDates.find();

@@ -93,21 +93,12 @@ export default function CreateFeeStructure() {
       setSuccess("Fee structure created successfully!");
       setError(null);
       
-      // Refresh the fee structure after successful submission
       const refreshRes = await fetch("/api/fee/get-fee-structure");
       const refreshData = await refreshRes.json();
       if (refreshRes.ok) {
         setFeeStructure(refreshData);
       }
       
-      // Reset form
-      // setFormData({
-      //   dayBoarding: activeTab === 0 ? "Boarding" : "Day",
-      //   level: "",
-      //   year: new Date().getFullYear(),
-      //   term: "",
-      //   amount: null
-      // });
     } catch (err) {
       setError("An error occurred while saving the fee structure.");
     } finally {
@@ -115,7 +106,6 @@ export default function CreateFeeStructure() {
     }
   };
 
-  // Sort years in descending order
   const sortedYears = Object.keys(feeStructure).sort((a, b) => b - a);
 
   return (
@@ -126,7 +116,6 @@ export default function CreateFeeStructure() {
         </h1>
       </div>
 
-      {/* Day/Boarding Tabs */}
       <div className="w-full mb-6">
         <Tabs
           variant="fullWidth"
@@ -138,7 +127,6 @@ export default function CreateFeeStructure() {
         </Tabs>
       </div>
 
-      {/* Status Messages */}
       {error && (
         <Alert color="failure" icon={HiInformationCircle} className="mb-4">
           {error}
@@ -236,7 +224,6 @@ export default function CreateFeeStructure() {
       </form>
       <UpdateFees/>
 
-      {/* Fee Structure by Year */}
       <div className="border border-gray-200 rounded-lg p-5">
         <h2 className="mb-4 text-xl font-bold">
           {activeTab === 0 ? "Boarding" : "Day"} School Fee Structures by Year

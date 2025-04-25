@@ -35,7 +35,6 @@ export const admitStudent = async (req, res, next) => {
         return next(errorHandler(400, 'Please provide all required fields for the student.'));
     }
 
-    // Initialize fee balances for current year terms
     const currentYear = new Date().getFullYear();
     const initialFeeBalances = ["Term 1", "Term 2", "Term 3"].map(term => ({
         term,
@@ -64,9 +63,7 @@ export const admitStudent = async (req, res, next) => {
 
     try {
         const savedStudent = await newStudent.save();
-        
-        // Automatically assign default fees based on level and dayBoarding
-        await assignDefaultFees(savedStudent._id, level, dayBoarding, currentYear, sponsored);
+            await assignDefaultFees(savedStudent._id, level, dayBoarding, currentYear, sponsored);
         
         return res.status(201).json(savedStudent);
     } catch (error) {
@@ -74,7 +71,6 @@ export const admitStudent = async (req, res, next) => {
     }
 };
 
-// Helper function to assign default fees
 const assignDefaultFees = async (studentId, level, dayBoarding, year, sponsored) => {
     try {
         const terms = ["Term 1", "Term 2", "Term 3"];
@@ -88,7 +84,6 @@ const assignDefaultFees = async (studentId, level, dayBoarding, year, sponsored)
             });
             
             if (feeStructure) {
-                // For sponsored students, set paid equal to amount, balance to 0, and status to Paid
                 const update = sponsored 
                     ? {
                         "feeBalances.$[elem].amount": feeStructure.amount,
@@ -172,7 +167,6 @@ export const updateStudent = async (req, res, next) => {
     }
     
     try {
-        // Handle fee payment updates separately
         if (req.body.feePayment) {
             return handleFeePayment(req, res, next);
         }
@@ -197,7 +191,6 @@ const handleFeePayment = async (req, res, next) => {
     try {
         const { amount, term, year, receiptNumber, recordedBy } = req.body.feePayment;
         
-        // Convert amount to number to prevent string concatenation
         const paymentAmount = Number(amount);
         if (isNaN(paymentAmount)) {
             return next(errorHandler(400, 'Invalid payment amount'));
@@ -208,7 +201,6 @@ const handleFeePayment = async (req, res, next) => {
             return next(errorHandler(404, 'Student not found'));
         }
 
-        // If student is sponsored, don't process payment and return current status
         if (student.sponsored) {
             return res.status(200).json({
                 ...student.toObject(),
@@ -216,7 +208,6 @@ const handleFeePayment = async (req, res, next) => {
             });
         }
 
-        // Update fee balance
         const feeBalanceIndex = student.feeBalances.findIndex(
             fb => fb.term === term && fb.year === year
         );
@@ -225,7 +216,6 @@ const handleFeePayment = async (req, res, next) => {
             return next(errorHandler(400, 'Fee structure not found for this term and year'));
         }
 
-        // Ensure all values are treated as numbers
         const currentPaid = Number(student.feeBalances[feeBalanceIndex].paid) || 0;
         const feeAmount = Number(student.feeBalances[feeBalanceIndex].amount) || 0;
         
@@ -233,10 +223,9 @@ const handleFeePayment = async (req, res, next) => {
         const updatedBalance = feeAmount - updatedPaid;
         const status = updatedBalance <= 0 ? "Paid" : (updatedPaid > 0 ? "Partial" : "Unpaid");
 
-        // Add to payment history
         const paymentRecord = {
             date: new Date(),
-            amount: paymentAmount, // Store as number
+            amount: paymentAmount,
             term,
             year,
             receiptNumber,
@@ -275,7 +264,6 @@ export const deleteStudent = async (req, res, next) => {
     }
 };
 
-// Additional fee-related controller methods
 export const getStudentFeeDetails = async (req, res, next) => {
     try {
         const student = await Student.findOne({ admNumber: parseInt(req.params.admNumber) });

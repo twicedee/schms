@@ -97,7 +97,6 @@ export default function StudentPage() {
         </div>)}
       </div>
 
-      {/* Profile Card */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-shrink-0">
@@ -164,7 +163,6 @@ export default function StudentPage() {
         </div>
       </div>
 
-      {/* Tabs Navigation */}
       <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
         <ul className="flex flex-wrap -mb-px">
           <li className="mr-2">
@@ -194,7 +192,6 @@ export default function StudentPage() {
         </ul>
       </div>
 
-      {/* Tab Content */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         {activeTab === 'profile' && (
           <div>
@@ -305,7 +302,6 @@ export default function StudentPage() {
         )}
       </div>
 
-      {/* Delete Confirmation Modal */}
       <Modal show={showModal} onClose={() => setShowModal(false)} popup size="md">
         <Modal.Header />
         <Modal.Body>

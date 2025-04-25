@@ -19,13 +19,13 @@ export const signup = async (req, res, next) => {
     password === '' ||
     initials === '' ||
     firstName === '' ||
-    lastName === '' 
+    lastName === ''
   ) {
     next(errorHandler(400, 'All fields are required'));
   }
 
   try {
-    
+
     // const invite = await Invite.findOne({ token, email });
 
     // if (!invite) {
@@ -36,10 +36,8 @@ export const signup = async (req, res, next) => {
     //   return next(errorHandler(400, 'Invite token has already been used'));
     // }
 
-    // Hash the password
     const hashedPassword = bcryptjs.hashSync(password, 10);
 
-    // Create a new user
     const newUser = new User({
       initials,
       firstName,
@@ -76,7 +74,7 @@ export const signin = async (req, res, next) => {
     }
     const token = jwt.sign(
       { id: validUser._id, isAdmin: validUser.isAdmin },
-      process.env.JWT_SECRET, {expiresIn: "8h"}
+      process.env.JWT_SECRET, { expiresIn: "8h" }
     );
 
     const { password: pass, ...rest } = validUser._doc;

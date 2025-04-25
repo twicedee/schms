@@ -9,7 +9,7 @@ import {
   Label,
   Radio,
   Checkbox,
-  Modal
+  Modal,
 } from "flowbite-react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -20,7 +20,7 @@ export default function UpdateStudent() {
   const [formData, setFormData] = useState({
     gender: "Female",
     dayBoarding: "Day",
-    sponscer: false
+    sponsored: false,
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -29,7 +29,9 @@ export default function UpdateStudent() {
     const fetchStudent = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/student/get-students?admNumber=${studentId}`);
+        const res = await fetch(
+          `/api/student/get-students?admNumber=${studentId}`
+        );
         const data = await res.json();
         if (!res.ok) {
           setError(data.message || "Failed to fetch student");
@@ -40,8 +42,8 @@ export default function UpdateStudent() {
           setStudent(data.students[0]);
           setFormData({
             ...data.students[0],
-            DOB: data.students[0].DOB.split('T')[0],
-            enrollmentDate: data.students[0].enrollmentDate.split('T')[0]
+            DOB: data.students[0].DOB.split("T")[0],
+            enrollmentDate: data.students[0].enrollmentDate.split("T")[0],
           });
           setLoading(false);
           setError(false);
@@ -56,12 +58,33 @@ export default function UpdateStudent() {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData({ ...formData, [id]: value });
+    const updatedFormData = { ...formData, [id]: value.trim() };
+
+    if (id === "grade") {
+      const grade = value.split(" ")[1] ? parseInt(value.split(" ")[1]) : 0;
+      let level = "";
+
+      if (grade >= 1 && grade <= 3) {
+        level = "Lower School";
+      } else if (grade >= 4 && grade <= 6) {
+        level = "Middle School";
+      } else if (grade >= 7 && grade <= 9) {
+        level = "Junior High School";
+      } else if (grade >= 10 && grade <= 12) {
+        level = "Senior High School";
+      } else {
+        level = "Pre-Primary";
+      }
+
+      updatedFormData.level = level;
+    }
+
+    setFormData(updatedFormData);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (
       !formData.enrollmentDate ||
       !formData.firstName ||
@@ -83,12 +106,12 @@ export default function UpdateStudent() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      
+
       if (!res.ok) {
         setError(data.message || "Update failed");
         return;
       }
-      
+
       navigate(`/student/${studentId}`);
     } catch (error) {
       setError(error.message);
@@ -116,7 +139,6 @@ export default function UpdateStudent() {
             Update Student
           </h1>
 
-          {/* Student Personal Information */}
           <div className="mt-2 border-b-4 border-black">
             <Label>Personal Information</Label>
           </div>
@@ -126,7 +148,7 @@ export default function UpdateStudent() {
               <TextInput
                 type="date"
                 id="enrollmentDate"
-                value={formData.enrollmentDate || ''}
+                value={formData.enrollmentDate || ""}
                 onChange={handleChange}
                 required
               />
@@ -136,7 +158,7 @@ export default function UpdateStudent() {
               <TextInput
                 type="text"
                 id="firstName"
-                value={formData.firstName || ''}
+                value={formData.firstName || ""}
                 onChange={handleChange}
                 required
               />
@@ -146,7 +168,7 @@ export default function UpdateStudent() {
               <TextInput
                 type="text"
                 id="lastName"
-                value={formData.lastName || ''}
+                value={formData.lastName || ""}
                 onChange={handleChange}
                 required
               />
@@ -156,18 +178,18 @@ export default function UpdateStudent() {
               <TextInput
                 type="text"
                 id="middleName"
-                value={formData.middleName || ''}
+                value={formData.middleName || ""}
                 onChange={handleChange}
               />
             </div>
             <div>
               <Label htmlFor="DOB">Date of Birth</Label>
-              <TextInput 
-                type="date" 
-                id="DOB" 
-                value={formData.DOB || ''} 
-                onChange={handleChange} 
-                required 
+              <TextInput
+                type="date"
+                id="DOB"
+                value={formData.DOB || ""}
+                onChange={handleChange}
+                required
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -179,7 +201,9 @@ export default function UpdateStudent() {
                     name="gender"
                     value="Female"
                     checked={formData.gender === "Female"}
-                    onChange={() => setFormData({...formData, gender: "Female"})}
+                    onChange={() =>
+                      setFormData({ ...formData, gender: "Female" })
+                    }
                   />
                   <Label htmlFor="gender-female">Female</Label>
                 </div>
@@ -189,7 +213,9 @@ export default function UpdateStudent() {
                     name="gender"
                     value="Male"
                     checked={formData.gender === "Male"}
-                    onChange={() => setFormData({...formData, gender: "Male"})}
+                    onChange={() =>
+                      setFormData({ ...formData, gender: "Male" })
+                    }
                   />
                   <Label htmlFor="gender-male">Male</Label>
                 </div>
@@ -197,7 +223,6 @@ export default function UpdateStudent() {
             </div>
           </div>
 
-          {/* Contact Information */}
           <div className="mt-2 border-b-4 border-black">
             <Label>Contact Information</Label>
           </div>
@@ -207,7 +232,7 @@ export default function UpdateStudent() {
               <TextInput
                 type="text"
                 id="parent"
-                value={formData.parent || ''}
+                value={formData.parent || ""}
                 onChange={handleChange}
               />
             </div>
@@ -216,13 +241,12 @@ export default function UpdateStudent() {
               <TextInput
                 type="tel"
                 id="contact"
-                value={formData.contact || ''}
+                value={formData.contact || ""}
                 onChange={handleChange}
               />
             </div>
           </div>
 
-          {/* Academic Information */}
           <div className="mt-2 border-b-4 border-black">
             <Label>Academic Information</Label>
           </div>
@@ -231,7 +255,7 @@ export default function UpdateStudent() {
               <Label htmlFor="level">Level</Label>
               <Select
                 id="level"
-                value={formData.level || ''}
+                value={formData.level || ""}
                 onChange={handleChange}
                 required
                 disabled
@@ -248,7 +272,7 @@ export default function UpdateStudent() {
               <Label htmlFor="grade">Grade</Label>
               <Select
                 id="grade"
-                value={formData.grade || ''}
+                value={formData.grade || ""}
                 onChange={handleChange}
                 required
               >
@@ -271,17 +295,17 @@ export default function UpdateStudent() {
               </Select>
             </div>
 
-            {/* Sponsor Field */}
             <div className="flex items-center gap-2">
-              <Checkbox 
-                id="sponscer" 
-                checked={formData.sponscer || false}
-                onChange={(e) => setFormData({...formData, sponscer: e.target.checked})}
+              <Checkbox
+                id="sponsored"
+                checked={formData.sponsored || false}
+                onChange={(e) =>
+                  setFormData({ ...formData, sponsored: e.target.checked })
+                }
               />
               <Label htmlFor="sponscer">Sponsored Student?</Label>
             </div>
 
-            {/* Boarding/Day Field */}
             <div className="flex flex-col gap-2">
               <Label>Residence Type:</Label>
               <div className="flex gap-4">
@@ -291,7 +315,9 @@ export default function UpdateStudent() {
                     name="dayBoarding"
                     value="Day"
                     checked={formData.dayBoarding === "Day"}
-                    onChange={() => setFormData({...formData, dayBoarding: "Day"})}
+                    onChange={() =>
+                      setFormData({ ...formData, dayBoarding: "Day" })
+                    }
                   />
                   <Label htmlFor="dayBoarding-day">Day</Label>
                 </div>
@@ -301,7 +327,9 @@ export default function UpdateStudent() {
                     name="dayBoarding"
                     value="Boarding"
                     checked={formData.dayBoarding === "Boarding"}
-                    onChange={() => setFormData({...formData, dayBoarding: "Boarding"})}
+                    onChange={() =>
+                      setFormData({ ...formData, dayBoarding: "Boarding" })
+                    }
                   />
                   <Label htmlFor="dayBoarding-boarding">Boarding</Label>
                 </div>
@@ -310,8 +338,8 @@ export default function UpdateStudent() {
           </div>
 
           <div className="flex justify-end gap-4 mt-6">
-            <Button 
-              color="gray" 
+            <Button
+              color="gray"
               onClick={() => navigate(`/student/${studentId}`)}
             >
               Cancel
@@ -331,7 +359,7 @@ export default function UpdateStudent() {
               )}
             </Button>
           </div>
-          
+
           {error && (
             <Alert className="mt-5" color="failure">
               {error}

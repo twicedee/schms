@@ -30,7 +30,6 @@ const feeStructureSchema = new mongoose.Schema({
     }
 });
 
-// Add compound index to ensure unique fee structure per level/dayBoarding/term/year
 feeStructureSchema.index(
     { level: 1, dayBoarding: 1, term: 1, year: 1 },
     { unique: true }
