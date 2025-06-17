@@ -9,6 +9,10 @@ export default defineConfig({
         target: 'http://localhost:3000',
         secure: false,
       },
+      '/uploads': {  // Add this new proxy rule
+        target: 'http://localhost:3000',
+        secure: false,
+      }
     },
   },
   plugins: [react()],

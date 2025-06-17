@@ -9,7 +9,7 @@ export default function Header({ onToggleSidebar }) {
   const now = new Date();
 
   return (
-    <Navbar className="border-b-2">
+    <Navbar className="border-b-2 ">
       <div className="flex items-center gap-2">
         <Avatar img="/mashimoni.png" className="bg-transparent" />
         <span className="text-lg font-semibold">Mashimoni Moyo Academy</span>

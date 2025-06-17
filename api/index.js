@@ -23,6 +23,9 @@ app.listen(3000, () => {
     console.log('Server is running on port 3000!!')
 })
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
 app.use(express.json())
 app.use(cookieParser());
 

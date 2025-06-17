@@ -1,3 +1,17 @@
+/**
+ * The code snippet contains functions for user signup, signin, and Google authentication using JWT
+ * tokens and bcrypt for password hashing.
+ * @param req - The `req` parameter in your code represents the request object in Express.js. It
+ * contains information about the HTTP request such as the request headers, body, parameters, query
+ * strings, etc.
+ * @param res - The `res` parameter in your code refers to the response object in Express.js. It is
+ * used to send a response back to the client making the request. In your code, you are using `res` to
+ * send JSON responses and set cookies in the response headers.
+ * @param next - The `next` parameter in your code refers to the next middleware function in the
+ * application's request-response cycle. It is a function that is called to pass control to the next
+ * middleware function. In your code, `next` is used to handle errors and pass them to the error
+ * handling middleware.
+ */
 import User from '../models/user.model.js';
 import bcryptjs from 'bcryptjs';
 import Invite from '../models/invite.model.js'

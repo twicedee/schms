@@ -1,10 +1,44 @@
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import User from '../models/user.model.js';
+import { upload, processImage } from '../utils/fileUpload.js';
+import fs from 'fs';
+import path from 'path';
+
 
 export const test = (req, res) => {
     res.json({ message: 'API is working!' });
 };
+
+// For user routes
+export const uploadProfileImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    // Process the image (resize and optimize)
+    await processImage(req.file.path);
+    const imagePath = `/uploads/${req.file.filename}` 
+    // Update user with image path
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { profilePicture: imagePath},
+      { new: true }
+    ).select('-password');
+    
+
+    res.status(200).json(user);
+  } catch (error) {
+    // Clean up uploaded file if error occurs
+    if (req.file) {
+      fs.unlinkSync(req.file.path);
+    }
+    next(error);
+  }
+};
+
+
 
 export const updateUser = async (req, res, next) => {
     if (req.user.id !== req.params.userId) {
@@ -35,19 +69,23 @@ export const updateUser = async (req, res, next) => {
         }
     }
     try {
+        const updateData = {
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            initials: req.body.initials,
+            username: req.body.username,
+            email: req.body.email,
+            password: req.body.password,
+        };
+
+        // Only update profilePicture if it's provided
+        if (req.body.profilePicture) {
+            updateData.profilePicture = req.body.profilePicture;
+        }
+
         const updatedUser = await User.findByIdAndUpdate(
             req.params.userId,
-            {
-                $set: {
-                    firstName: req.body.firstName,
-                    lastName: req.body.lastName,
-                    initials: req.body.initials,
-                    username: req.body.username,
-                    email: req.body.email,
-                    profilePicture: req.body.profilePicture,
-                    password: req.body.password,
-                },
-            },
+            { $set: updateData },
             { new: true }
         );
         const { password, ...rest } = updatedUser._doc;

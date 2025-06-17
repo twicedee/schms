@@ -34,7 +34,7 @@ export default function MainSidebar({ isVisible, onClose }) {
 
   return (
     <div
-      className={`fixed inset-0 bg-gray-900 bg-opacity-50 z-50 transition-transform ${
+      className={`fixed m-auto h-auto inset-0 bg-gray-900 bg-opacity-50 z-50 transition-transform ${
         isVisible ? "translate-x-0" : "-translate-x-full"
       } lg:translate-x-0 lg:static lg:bg-transparent md:translate-x-0 md:static md:bg-transparent`}
       onClick={onClose}

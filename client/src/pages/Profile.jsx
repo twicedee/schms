@@ -1,15 +1,6 @@
 import { Alert, Button, Modal, ModalBody, TextInput } from 'flowbite-react';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-// import {
-//   getDownloadURL,
-//   getStorage,
-//   ref,
-//   uploadBytesResumable,
-// } from 'firebase/storage';
-//import { app } from '../firebase';
-//import { CircularProgressbar } from 'react-circular-progressbar';
-//import 'react-circular-progressbar/dist/styles.css';
 import {
   updateStart,
   updateSuccess,
@@ -27,7 +18,6 @@ export default function DashProfile() {
   const { currentUser, error, loading } = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
-  const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
   const [imageFileUploading, setImageFileUploading] = useState(false);
   const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
@@ -36,62 +26,59 @@ export default function DashProfile() {
   const [formData, setFormData] = useState({});
   const filePickerRef = useRef();
   const dispatch = useDispatch();
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 3 * 1024 * 1024) { // 5MB limit
+        setImageFileUploadError('File size must be less than 5MB');
+        return;
+      }
+      setImageFileUploadError(null);
       setImageFile(file);
       setImageFileUrl(URL.createObjectURL(file));
     }
   };
+
+  const uploadImage = async () => {
+    if (!imageFile) return;
+    
+    setImageFileUploading(true);
+    setImageFileUploadError(null);
+    
+    try {
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      
+      const res = await fetch('/api/user/upload', {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        setImageFileUploadError(data.message || 'Image upload failed');
+        return;
+      }
+      
+      // Update formData with the new image URL
+      setFormData({ ...formData, profilePicture: data.profilePicture });
+      setUpdateUserSuccess('Profile image updated successfully');
+    } catch (error) {
+      setImageFileUploadError('Image upload failed');
+      console.log(error)
+    } finally {
+      setImageFileUploading(false);
+    }
+  };
+
   useEffect(() => {
     if (imageFile) {
       uploadImage();
     }
   }, [imageFile]);
-
-  // const uploadImage = async () => {
-  //   // service firebase.storage {
-  //   //   match /b/{bucket}/o {
-  //   //     match /{allPaths=**} {
-  //   //       allow read;
-  //   //       allow write: if
-  //   //       request.resource.size < 2 * 1024 * 1024 &&
-  //   //       request.resource.contentType.matches('image/.*')
-  //   //     }
-  //   //   }
-  //   // }
-  //   setImageFileUploading(true);
-  //   setImageFileUploadError(null);
-  //   const storage = getStorage(app);
-  //   const fileName = new Date().getTime() + imageFile.name;
-  //   const storageRef = ref(storage, fileName);
-  //   const uploadTask = uploadBytesResumable(storageRef, imageFile);
-  //   uploadTask.on(
-  //     'state_changed',
-  //     (snapshot) => {
-  //       const progress =
-  //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-
-  //       setImageFileUploadProgress(progress.toFixed(0));
-  //     },
-  //     (error) => {
-  //       setImageFileUploadError(
-  //         'Could not upload image (File must be less than 2MB)'
-  //       );
-  //       setImageFileUploadProgress(null);
-  //       setImageFile(null);
-  //       setImageFileUrl(null);
-  //       setImageFileUploading(false);
-  //     },
-  //     () => {
-  //       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-  //         setImageFileUrl(downloadURL);
-  //         setFormData({ ...formData, profilePicture: downloadURL });
-  //         setImageFileUploading(false);
-  //       });
-  //     }
-  //   );
-  // };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -101,14 +88,17 @@ export default function DashProfile() {
     e.preventDefault();
     setUpdateUserError(null);
     setUpdateUserSuccess(null);
+    
     if (Object.keys(formData).length === 0) {
       setUpdateUserError('No changes made');
       return;
     }
+    
     if (imageFileUploading) {
       setUpdateUserError('Please wait for image to upload');
       return;
     }
+    
     try {
       dispatch(updateStart());
       const res = await fetch(`/api/user/update/${currentUser._id}`, {
@@ -116,27 +106,35 @@ export default function DashProfile() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
+      
       const data = await res.json();
+      
       if (!res.ok) {
         dispatch(updateFailure(data.message));
         setUpdateUserError(data.message);
       } else {
         dispatch(updateSuccess(data));
         setUpdateUserSuccess("User's profile updated successfully");
+        // Reset image states after successful update
+        setImageFile(null);
+        setImageFileUrl(null);
       }
     } catch (error) {
       dispatch(updateFailure(error.message));
       setUpdateUserError(error.message);
     }
   };
+
   const handleDeleteUser = async () => {
     setShowModal(false);
     try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
       const data = await res.json();
       if (!res.ok) {
@@ -153,6 +151,7 @@ export default function DashProfile() {
     try {
       const res = await fetch('/api/user/signout', {
         method: 'POST',
+        credentials: 'include',
       });
       const data = await res.json();
       if (!res.ok) {
@@ -164,6 +163,7 @@ export default function DashProfile() {
       console.log(error.message);
     }
   };
+
   return (
     <div className='max-w-lg mx-auto p-3 w-full'>
       <h1 className='my-7 text-center font-semibold text-3xl'>Profile</h1>
@@ -179,36 +179,18 @@ export default function DashProfile() {
           className='relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full'
           onClick={() => filePickerRef.current.click()}
         >
-          {imageFileUploadProgress && (
-            <CircularProgressbar
-              value={imageFileUploadProgress || 0}
-              text={`${imageFileUploadProgress}%`}
-              strokeWidth={5}
-              styles={{
-                root: {
-                  width: '100%',
-                  height: '100%',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                },
-                path: {
-                  stroke: `rgba(62, 152, 199, ${
-                    imageFileUploadProgress / 100
-                  })`,
-                },
-              }}
-            />
-          )}
           <img
             src={imageFileUrl || currentUser.profilePicture}
             alt='user'
             className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${
-              imageFileUploadProgress &&
-              imageFileUploadProgress < 100 &&
-              'opacity-60'
+              imageFileUploading && 'opacity-60'
             }`}
           />
+          {imageFileUploading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
+              <div className="text-white font-semibold">Uploading...</div>
+            </div>
+          )}
         </div>
         {imageFileUploadError && (
           <Alert color='failure'>{imageFileUploadError}</Alert>
@@ -261,7 +243,6 @@ export default function DashProfile() {
         >
           {loading ? 'Updating...' : 'Update'}
         </Button>
-        
       </form>
       <div className='text-red-500 flex justify-between mt-5'>
         <span onClick={() => setShowModal(true)} className='cursor-pointer'>

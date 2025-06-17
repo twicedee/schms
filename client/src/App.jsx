@@ -43,7 +43,7 @@ export default function App() {
             <Route
               path="*"
               element={
-                <div className="flex flex-row p-2">
+                <div className="flex flex-row p-2 backdrop-blur-md max-h-128 m-4">
                   <MainSidebar />
                   <div className="flex-1 overflow-auto">
                     <Routes>
