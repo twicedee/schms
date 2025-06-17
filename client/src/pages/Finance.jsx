@@ -4,15 +4,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function Finance() {
-  const [loading, setLoading] = useState(true);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Spinner size="xl" />
-      </div>
-    );
-  }
+  
 
   return (
     <div className="mx-auto w-full max-w-4xl">
