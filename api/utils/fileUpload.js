@@ -1,39 +1,60 @@
 import multer from 'multer';
 import path from 'path';
-import sharp from 'sharp';
 import fs from 'fs';
+import sharp from 'sharp';
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = 'uploads/';
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+
+// Common configuration
+const fileFilter = (req, file, cb) => {
+  const filetypes = /jpeg|jpg|png|gif/;
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = filetypes.test(file.mimetype);
+  if (extname && mimetype) return cb(null, true);
+  cb('Error: Images Only!');
+};
+
+// Profile Pictures Config
+const profilePicStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join('uploads', 'profilePics');
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
-    cb(null, uploadDir);
+    cb(null, dir);
+    
   },
-  filename: function (req, file, cb) {
+  filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
 
-const fileFilter = (req, file, cb) => {
-  const filetypes = /jpeg|jpg|png|gif/;
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = filetypes.test(file.mimetype);
-
-  if (extname && mimetype) {
-    return cb(null, true);
-  } else {
-    cb('Error: Images Only!');
+// Student Photos Config
+const studentPhotoStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join('uploads', 'studentPhotos');
+    fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, 'student-' + uniqueSuffix + path.extname(file.originalname));
   }
-};
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 3 * 1024 * 1024 }, // 5MB limit
-  fileFilter: fileFilter
 });
+
+// Create middleware instances
+export const uploadProfilePic = multer({
+  storage: profilePicStorage,
+  limits: { fileSize: 3 * 1024 * 1024 }, // 3MB
+  fileFilter
+});
+
+export const uploadStudentPhoto = multer({
+  storage: studentPhotoStorage,
+  limits: { fileSize: 3 * 1024 * 1024 }, // 3MB
+  fileFilter
+});
+
 
 const processImage = async (filePath) => {
   try {
@@ -45,9 +66,12 @@ const processImage = async (filePath) => {
     fs.writeFileSync(filePath, processedImage);
     return filePath;
   } catch (error) {
-    fs.unlinkSync(filePath); // Delete the file if processing fails
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
     throw error;
+
   }
 };
 
-export { upload, processImage };
+export { processImage };

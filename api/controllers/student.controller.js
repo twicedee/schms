@@ -1,6 +1,32 @@
 import Student from "../models/student.model.js";
 import FeeStructure from "../models/feeStructure.model.js";
 import { errorHandler } from '../utils/error.js';
+import { processImage } from '../utils/fileUpload.js';
+import fs from 'fs';
+
+
+// controllers/student.controller.js
+export const uploadStudentImage = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        await processImage(req.file.path);
+        const imagePath = `/uploads/studentPhotos/${req.file.filename}`;
+
+        const student = await Student.findOneAndUpdate(
+            { admNumber: parseInt(req.params.admNumber) },
+            { studentPhoto: imagePath },
+            { new: true }
+        );
+
+        res.status(200).json(student);
+    } catch (error) {
+        if (req.file) fs.unlinkSync(req.file.path);
+        next(error);
+    }
+};
 
 export const admitStudent = async (req, res, next) => {
     if (!req.user.isAdmin) {
@@ -63,8 +89,8 @@ export const admitStudent = async (req, res, next) => {
 
     try {
         const savedStudent = await newStudent.save();
-            await assignDefaultFees(savedStudent._id, level, dayBoarding, currentYear, sponsored);
-        
+        await assignDefaultFees(savedStudent._id, level, dayBoarding, currentYear, sponsored);
+
         return res.status(201).json(savedStudent);
     } catch (error) {
         next(error);
@@ -74,7 +100,7 @@ export const admitStudent = async (req, res, next) => {
 const assignDefaultFees = async (studentId, level, dayBoarding, year, sponsored) => {
     try {
         const terms = ["Term 1", "Term 2", "Term 3"];
-        
+
         for (const term of terms) {
             const feeStructure = await FeeStructure.findOne({
                 level,
@@ -82,9 +108,9 @@ const assignDefaultFees = async (studentId, level, dayBoarding, year, sponsored)
                 term,
                 year
             });
-            
+
             if (feeStructure) {
-                const update = sponsored 
+                const update = sponsored
                     ? {
                         "feeBalances.$[elem].amount": feeStructure.amount,
                         "feeBalances.$[elem].paid": feeStructure.amount,
@@ -113,7 +139,7 @@ export const getStudents = async (req, res, next) => {
         const startIndex = parseInt(req.query.startIndex) || 0;
         const limit = parseInt(req.query.limit) || 10;
         const sortDirection = req.query.order === 'asc' ? 1 : -1;
-        
+
         const query = {
             ...(req.query.admNumber && { admNumber: parseInt(req.query.admNumber) }),
             ...(req.query.firstName && { firstName: { $regex: req.query.firstName, $options: 'i' } }),
@@ -165,7 +191,7 @@ export const updateStudent = async (req, res, next) => {
     if (!req.user.isAdmin) {
         return next(errorHandler(403, 'You are not allowed to update this student'));
     }
-    
+
     try {
         if (req.body.feePayment) {
             return handleFeePayment(req, res, next);
@@ -190,7 +216,7 @@ export const updateStudent = async (req, res, next) => {
 const handleFeePayment = async (req, res, next) => {
     try {
         const { amount, term, year, receiptNumber, recordedBy } = req.body.feePayment;
-        
+
         const paymentAmount = Number(amount);
         if (isNaN(paymentAmount)) {
             return next(errorHandler(400, 'Invalid payment amount'));
@@ -218,7 +244,7 @@ const handleFeePayment = async (req, res, next) => {
 
         const currentPaid = Number(student.feeBalances[feeBalanceIndex].paid) || 0;
         const feeAmount = Number(student.feeBalances[feeBalanceIndex].amount) || 0;
-        
+
         const updatedPaid = currentPaid + paymentAmount;
         const updatedBalance = feeAmount - updatedPaid;
         const status = updatedBalance <= 0 ? "Paid" : (updatedPaid > 0 ? "Partial" : "Unpaid");

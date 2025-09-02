@@ -1,7 +1,7 @@
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import User from '../models/user.model.js';
-import { upload, processImage } from '../utils/fileUpload.js';
+import { processImage } from '../utils/fileUpload.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -19,7 +19,9 @@ export const uploadProfileImage = async (req, res, next) => {
 
     // Process the image (resize and optimize)
     await processImage(req.file.path);
-    const imagePath = `/uploads/${req.file.filename}` 
+    const imagePath = `/uploads/profilePics/${req.file.filename}` 
+    console.log('Image path:', imagePath);
+
     // Update user with image path
     const user = await User.findByIdAndUpdate(
       req.user.id,
@@ -30,8 +32,9 @@ export const uploadProfileImage = async (req, res, next) => {
 
     res.status(200).json(user);
   } catch (error) {
-    // Clean up uploaded file if error occurs
-    if (req.file) {
+    console.error('Upload error:', error);
+    // Clean up uploaded file if error occurs and file exists
+    if (req.file && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
     next(error);
