@@ -13,6 +13,8 @@ A full-stack **School Management System** built using **Express.js**, **MongoDB*
 
 The system supports student management, staff management, events, fee structures, user accounts, and invite flows.
 
+Site live at https://mashimoni-cc.onrender.com
+
 ---
 
 ## 🚀 **Tech Stack**
@@ -64,20 +66,37 @@ The system supports student management, staff management, events, fee structures
 ## 📁 **Project Structure**
 
 ### **Root**
+```
 schms/
-├─ api/ # Backend
-├─ client/ # Frontend
-├─ uploads/ # Uploaded files
+├─ api/           # Backend
+├─ client/        # Frontend
+├─ uploads/       # Uploaded files
+```
 
-
----
 
 ### **Backend (`/api`)**
-
-
+```
 api
-├─ controllers
-├─ models
-├─ routes
-├─ utils
-└─ index.js
+├─ controllers    #Handles logic
+├─ models         #Stores Mongoose schemas
+├─ routes         #Handles routes for various apis
+├─ utils          #JWT, Error Handling and image upload 
+└─ index.js       #Main script
+```
+### **Frontend (`/client`)**
+
+```
+├─ src
+│ ├─ components   #Sidebars, breadcrumbs, modals
+│ ├─ pages        #All the pagesin the web app
+│ ├─ redux        #State management
+│ ├─ assets 
+│ ├─ App.jsx
+│ └─ main.jsx
+```
+
+
+
+## 🤝 Contributing
+
+PRs are welcome.
